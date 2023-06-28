@@ -17,35 +17,22 @@ class Mpu:
         self.semOk = False
         self.semBusy = False
         self.strOut = ""
-        self.strDeviceType = ""
 
         self.link = JLink()
         self.semOk, self.strOut = self.link.init(sn)
         print(self.semOk, self.strOut)
+        self.strDeviceType = self.link.str_dev_type(type)
 
 
     def checkJLink(self):
         if self.semBusy == False:
             self.semOk, self.strOut = self.link.get_product_name()
-            if self.semOk:
-                self.strStatus = self.strOut + ' to ' + self.strDeviceType
-            else:
-                self.strStatus = self.strOut
-        if self.semOk and self.semBusy == False:
-            self.read_img_id()
-        if self.semOk and self.semBusy == False:
-            self.read_img_info(self.link)
-        if self.semOk == False:
             self.strStatus = self.strOut
-            # self.title(self.LIB_VERSION + 'J-Link Closed' + '   ! ')
-            sleep(1)
-            # self.title(self.LIB_VERSION + 'J-Link Closed')
-        else:
-            self.strStatus = self.strOut + ' to ' + self.strDeviceType
-            # self.title(self.LIB_VERSION + self.strDeviceType + '   ! ')
-            sleep(1)
-            # self.title(self.LIB_VERSION + self.strDeviceType)
-        sleep(1)
+        if self.semOk and self.semBusy == False:
+            self.semOk, self.id = self.link.read_id()
+        if self.semOk and self.semBusy == False:
+            self.semOk, cs, type, self.ver, len = self.link.read_info()
+        self.strStatus = self.strOut
 
     def open_file(self, cpu, lts):
         try:
@@ -100,9 +87,9 @@ class Mpu:
 
     def read_img_id(self):
         try:
-            res, inp = self.link.read_id()
+            res, _id = self.link.read_id()
             if res:
-                self.label_curr_id.configure(text="Current ID:  " + str(inp))
+                self.label_curr_id.configure(text="Current ID:  " + str(_id))
             else:
                 self.label_curr_id.configure(text='Unknown ID')
         except:

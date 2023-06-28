@@ -1400,7 +1400,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="varCurrVersionNbrNw_2">
+    <widget class="QLabel" name="varCurrIdNbrNw">
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -2031,7 +2031,7 @@ background-color:white;</string>
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="varCurrVersionNbrGw_2">
+    <widget class="QLabel" name="varCurrIdNbrGw">
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -3040,7 +3040,7 @@ background-color:white;</string>
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="varCurrVersionNbrMp_2">
+    <widget class="QLabel" name="varCurrIdNbrMp">
      <property name="geometry">
       <rect>
        <x>200</x>
@@ -3634,7 +3634,7 @@ background-color:white;</string>
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="varCurrVersionNbrRem_2">
+    <widget class="QLabel" name="varCurrIdNbrRem">
      <property name="geometry">
       <rect>
        <x>200</x>

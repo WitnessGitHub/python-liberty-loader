@@ -68,25 +68,50 @@ class MainWindow(QtWidgets.QMainWindow):
         while True:
             self.mpuRem.checkJLink()
             self.varJLinkStateRem.setText(str(self.mpuRem.strStatus))
+            if self.mpuRem.semOk:
+                self.varCurrVersionNbrRem.setText(str(self.mpuRem.ver).zfill(6))
+                self.varCurrIdNbrRem.setText(str(self.mpuRem.id))
+            else:
+                self.varCurrIdNbrRem.setText('__')
+                self.varCurrVersionNbrRem.setText('__')
+            sleep(1)
 
     def netwTask(self):
         while True:
             self.mpuNetw.checkJLink()
             self.varJLinkStateNw.setText(str(self.mpuNetw.strStatus))
+            if self.mpuNetw.semOk:
+                self.varCurrVersionNbrNw.setText(str(self.mpuNetw.ver).zfill(6))
+                self.varCurrIdNbrNw.setText(str(self.mpuNetw.id))
+                pass
+            else:
+                self.varCurrIdNbrNw.setText('__')
+                self.varCurrVersionNbrNw.setText('__')
+            sleep(1)
 
     def mainTask(self):
         while True:
             self.mpuMain.checkJLink()
             self.varJLinkStateMp.setText(str(self.mpuMain.strStatus))
-            if self.mpuMain.strStatus:
-                self.groupBoxMain.setStyleSheet("background-color: blue;")
+            if self.mpuMain.semOk:
+                self.varCurrVersionNbrMp.setText(str(self.mpuMain.ver).zfill(6))
+                self.varCurrIdNbrMp.setText(str(self.mpuMain.id))
             else:
-                self.groupBoxMain.setStyleSheet("background-color: cyan;")
+                self.varCurrIdNbrMp.setText('__')
+                self.varCurrVersionNbrMp.setText('__')
+            sleep(1)
 
     def gwTask(self):
         while True:
             self.mpuGw.checkJLink()
             self.varJLinkStateGw.setText(str(self.mpuGw.strStatus))
+            if self.mpuGw.semOk:
+                self.varCurrVersionNbrGw.setText(str(self.mpuGw.ver).zfill(6))
+                self.varCurrIdNbrGw.setText(str(self.mpuGw.id))
+            else:
+                self.varCurrIdNbrGw.setText('__')
+                self.varCurrVersionNbrGw.setText('__')
+            sleep(1)
 
     def changeSet(self):
         self.released_imgs_update(self.checkBox.isChecked())

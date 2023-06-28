@@ -44,7 +44,8 @@ class JLink():
         sublist_img_cs = list[4:8]
         sublist_dev_type = list[8:12]
         sublist_ver_nbr = list[12:16]
-        sublist_data = list[16:28]
+        sublist_img_len = list[16:20]
+        sublist_data = list[20:28]
         sublist_cs = list[28:]
         # rx preamble
         rx_pream = sum(e * 0x100 ** (i) for i, e in enumerate(sublist_prm))
@@ -54,6 +55,8 @@ class JLink():
         rx_dev_type = sum(e * 0x100 ** (i) for i, e in enumerate(sublist_dev_type))
         # rx ver_nbr
         rx_ver_nbr = sum(e * 0x100 ** (i) for i, e in enumerate(sublist_ver_nbr))
+        # rx img len
+        rx_img_len = sum(e * 0x100 ** (i) for i, e in enumerate(sublist_img_len))
         # rx cs
         rx_cs = sum(e * 0x100 ** (i) for i, e in enumerate(sublist_cs))
         # calculate cs
@@ -61,9 +64,10 @@ class JLink():
         calc_cs += sum(e for i, e in enumerate(sublist_img_cs))
         calc_cs += sum(e for i, e in enumerate(sublist_dev_type))
         calc_cs += sum(e for i, e in enumerate(sublist_ver_nbr))
+        calc_cs += sum(e for i, e in enumerate(sublist_img_len))
         # print('preamble info ', rx_pream, self.PAGE_PREAMBLE, rx_pream == self.PAGE_PREAMBLE)
         # print('cs info ', rx_cs, calc_cs, rx_cs == calc_cs)
-        return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_img_cs, rx_dev_type, rx_ver_nbr
+        return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_img_cs, rx_dev_type, rx_ver_nbr, rx_img_len
 
     def init(self, sn):
         self.sn = sn
@@ -177,23 +181,27 @@ class JLink():
 
     def set_img_info(self, file_name):
         list = file_name.split('_')
+        # print(list)
         pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
-        dev_cs = int(list[3].split('.')[0], 16)
+        img_len = 128 * int(list[4].split('.')[0], 16)
         dev_type = self.int_dev_type(list[1])
         ver_nbr = int(list[2])
-        # print('dev_type', dev_type, 'ver_nbr', ver_nbr, 'dev_cs', dev_cs)
-        dev_cs_buff = [(dev_cs >> (8 * i)) & 0xff for i in range(4)] # 4
-        dev_type_buff = [(dev_type >> (8 * i)) & 0xff for i in range(4)] # 4
-        ver_nbr_buff = [(ver_nbr >> (8 * i)) & 0xff for i in range(4)] # 4
-        zero_buff = [0 for i in range(12)] # 12
-        # print('prepared info ', pream_list, dev_cs_buff, dev_type_buff, ver_nbr_buff)
+        dev_cs = int(list[3], 16)
+        # print('dev_type', dev_type, 'ver_nbr', ver_nbr, 'img_len', img_len, 'dev_cs', dev_cs)
+        dev_cs_buff = [(dev_cs >> (8 * i)) & 0xff for i in range(4)]  # 4
+        dev_type_buff = [(dev_type >> (8 * i)) & 0xff for i in range(4)]  # 4
+        ver_nbr_buff = [(ver_nbr >> (8 * i)) & 0xff for i in range(4)]  # 4
+        img_len_buff = [(img_len >> (8 * i)) & 0xff for i in range(4)]  # 4
+        zero_buff = [0 for i in range(8)]  # 8
+        # print('prepared info ', pream_list, dev_cs_buff, dev_type_buff, ver_nbr_buff, img_len_buff)
         # calculate cs
         calc_cs = sum(e for i, e in enumerate(pream_list))
         calc_cs += sum(e for i, e in enumerate(dev_cs_buff))
         calc_cs += sum(e for i, e in enumerate(dev_type_buff))
         calc_cs += sum(e for i, e in enumerate(ver_nbr_buff))
+        calc_cs += sum(e for i, e in enumerate(img_len_buff))
         info_cs_buff = [(calc_cs >> (8 * i)) & 0xff for i in range(4)]
-        out_buff = pream_list + dev_cs_buff + dev_type_buff + ver_nbr_buff + zero_buff + info_cs_buff
+        out_buff = pream_list + dev_cs_buff + dev_type_buff + ver_nbr_buff + img_len_buff + zero_buff + info_cs_buff
         self.sanity_block_info(out_buff)
         # jlink operation
         self.reopen()
