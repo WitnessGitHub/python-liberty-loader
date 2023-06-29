@@ -67,7 +67,7 @@ class JLink():
         calc_cs += sum(e for i, e in enumerate(sublist_img_len))
         # print('preamble info ', rx_pream, self.PAGE_PREAMBLE, rx_pream == self.PAGE_PREAMBLE)
         # print('cs info ', rx_cs, calc_cs, rx_cs == calc_cs)
-        return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_img_cs, rx_dev_type, rx_ver_nbr, rx_img_len
+        return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_ver_nbr
 
     def init(self, sn):
         self.sn = sn
@@ -99,35 +99,37 @@ class JLink():
             return True, "JLink Connected"
         except pylink.JLinkException as e:
             self.jlink.close()
-            return False, e
+            return False, str(e)
 
     def get_product_name(self):
-        try:
-            #: jlink operation
-            self.reopen()
-            product = self.jlink.product_name
-            if re.search('J-Link', product):
-                self.jlink.close()
-                return True, "JLink Connected"
-            else:
-                self.jlink.close()
-                return False, "JLink Unknown"
-        except pylink.JLinkException as e:
+        _sem, _res = self.reopen()
+        if _sem == False:
+            return _sem, _res
+        product = self.jlink.product_name
+        if re.search('J-Link', product):
             self.jlink.close()
-            return False, e
+            return True, "JLink Connected"
+        else:
+            self.jlink.close()
+            return False, "JLink Unknown"
 
     def read_id(self):
-        # jlink operation
-        self.reopen()
+        _sem, _res = self.reopen()
+        if _sem == False:
+            return _sem, _res, 0
         buff = self.jlink.memory_read8(self.ADD_ID, 32)
         self.jlink.close()
-        return self.sanity_block_id(buff)
+        _sem, _id = self.sanity_block_id(buff)
+        return _sem, _res, _id
+
     def read_info(self):
-        # jlink operation
-        self.reopen()
+        _sem, _res = self.reopen()
+        if _sem == False:
+            return _sem, _res, 0
         buff = self.jlink.memory_read8(self.ADD_INFO, 32)
         self.jlink.close()
-        return self.sanity_block_info(buff)
+        _sem, _ver = self.sanity_block_info(buff)
+        return _sem, _res, _ver
 
     def set_id(self, id):
         pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
@@ -181,12 +183,15 @@ class JLink():
 
     def set_img_info(self, file_name):
         list = file_name.split('_')
-        # print(list)
         pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
-        img_len = 128 * int(list[4].split('.')[0], 16)
+        if len(list) > 4:
+            img_len = 128 * int(list[4].split('.')[0], 16)
+            dev_cs = int(list[3], 16)
+        else:
+            img_len = 0
+            dev_cs = int(list[3].split('.')[0], 16)
         dev_type = self.int_dev_type(list[1])
         ver_nbr = int(list[2])
-        dev_cs = int(list[3], 16)
         # print('dev_type', dev_type, 'ver_nbr', ver_nbr, 'img_len', img_len, 'dev_cs', dev_cs)
         dev_cs_buff = [(dev_cs >> (8 * i)) & 0xff for i in range(4)]  # 4
         dev_type_buff = [(dev_type >> (8 * i)) & 0xff for i in range(4)]  # 4
@@ -204,7 +209,9 @@ class JLink():
         out_buff = pream_list + dev_cs_buff + dev_type_buff + ver_nbr_buff + img_len_buff + zero_buff + info_cs_buff
         self.sanity_block_info(out_buff)
         # jlink operation
-        self.reopen()
+        _sem, _res  = self.reopen()
+        if _sem == False:
+            return _sem, _res
         self.jlink.flash(out_buff, self.ADD_INFO)
         self.jlink.close()
-        return list[1], list[2]
+        return _sem, _res

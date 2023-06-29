@@ -1,7 +1,6 @@
 import os
 import re
 
-
 class ImgFiles:
      def __init__(self):
         self.path = "C:/Liberty/LastRelease"
@@ -10,7 +9,6 @@ class ImgFiles:
         # -- linux --
         # self.lib_path_lts = "/opt/liberty/LastRelease"
         # self.lib_path_dev = /opt/liberty/Candidates"
-        self.imgs = {' Main CPU': 'LIB_MAIN', ' Network CPU': 'LIB_NETW', ' Remote CPU': 'LIB_REM', ' GuideWire CPU': 'LIB_GW'}
         self.dir_list = []
 
      def list_files(self, lts):
@@ -18,6 +16,7 @@ class ImgFiles:
          self.path = self.lib_path_lts
          if lts:
             self.path = self.lib_path_dev
+         print(self.path)
          if os.path.exists(self.path) == True:
              self.dir_list = os.listdir(self.path)
              for ind in range(len(self.dir_list)):
@@ -25,7 +24,7 @@ class ImgFiles:
                      list.append(self.dir_list[ind])
          return list
 
-     def read_files(self, image, lts):
+     def read_files(self, type_mpu, lts):
          self.path = self.lib_path_lts
          if lts:
              self.path = self.lib_path_dev
@@ -34,7 +33,7 @@ class ImgFiles:
                 # print(self.dir_list, len(self.dir_list), image)
                 sem = False
                 for ind in range(len(self.dir_list)):
-                    matches = [match for match in self.dir_list if self.imgs[image] in match]
+                    matches = [match for match in self.dir_list if self.imgs[type_mpu] in match]
                     if len(matches) > 0:
                         # print(matches[0])
                         return True, matches[0]

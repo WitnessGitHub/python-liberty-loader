@@ -7,11 +7,8 @@ from time import sleep
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QMessageBox
 import sys
-import os
-from datetime import datetime
 
 from img_files import ImgFiles
-from lib_jlink import JLink
 from mpu import Mpu
 
 
@@ -47,70 +44,56 @@ class MainWindow(QtWidgets.QMainWindow):
         self.mpuGw = Mpu(self.SN_GW, self.DEVICE_TYPE_GW)
         self.mpuRem = Mpu(self.SN_REM, self.DEVICE_TYPE_REM)
 
-        self.varCurrVersionNbrMp.setText("__.__.__")
-        self.varCurrVersionNbrNw.setText("__.__.__")
-        self.varCurrVersionNbrGw.setText("__.__.__")
-        self.varCurrVersionNbrRem.setText("__.__.__")
-
         self.released_imgs_update(self.checkBox.isChecked())
+        # checkbox connection
         self.checkBox.released.connect(self.changeSet)
+        # buttons connection
+        self.pushButtonUpdateImages.released.connect(self.funUpdateImages)
+        self.pushButtonUpdateId.released.connect(self.funUpdateId)
 
         threading.Timer(2.0, self.delay_init).start()
 
     def delay_init(self):
         # print('start JLink control')
-        self.taskJLinkControl = threading.Thread(target=self.remTask, daemon=True).start()
-        self.taskJLinkControl = threading.Thread(target=self.netwTask, daemon=True).start()
-        self.taskJLinkControl = threading.Thread(target=self.mainTask, daemon=True).start()
-        self.taskJLinkControl = threading.Thread(target=self.gwTask, daemon=True).start()
+        self.taskJLinkControlRem = threading.Thread(target=self.remTask, daemon=True).start()
+        self.taskJLinkControlNetw = threading.Thread(target=self.netwTask, daemon=True).start()
+        self.taskJLinkControlMain = threading.Thread(target=self.mainTask, daemon=True).start()
+        self.taskJLinkControlGw = threading.Thread(target=self.gwTask, daemon=True).start()
 
     def remTask(self):
         while True:
             self.mpuRem.checkJLink()
             self.varJLinkStateRem.setText(str(self.mpuRem.strStatus))
-            if self.mpuRem.semOk:
-                self.varCurrVersionNbrRem.setText(str(self.mpuRem.ver).zfill(6))
-                self.varCurrIdNbrRem.setText(str(self.mpuRem.id))
-            else:
-                self.varCurrIdNbrRem.setText('__')
-                self.varCurrVersionNbrRem.setText('__')
+            _strVer, _strId = self.mpuRem.getStrVerId()
+            self.varCurrVersionNbrRem.setText(_strVer)
+            self.varCurrIdNbrRem.setText(_strId)
             sleep(1)
 
     def netwTask(self):
         while True:
             self.mpuNetw.checkJLink()
             self.varJLinkStateNw.setText(str(self.mpuNetw.strStatus))
-            if self.mpuNetw.semOk:
-                self.varCurrVersionNbrNw.setText(str(self.mpuNetw.ver).zfill(6))
-                self.varCurrIdNbrNw.setText(str(self.mpuNetw.id))
-                pass
-            else:
-                self.varCurrIdNbrNw.setText('__')
-                self.varCurrVersionNbrNw.setText('__')
+            _strVer, _strId = self.mpuNetw.getStrVerId()
+            self.varCurrVersionNbrNw.setText(_strVer)
+            self.varCurrIdNbrNw.setText(_strId)
             sleep(1)
 
     def mainTask(self):
         while True:
             self.mpuMain.checkJLink()
             self.varJLinkStateMp.setText(str(self.mpuMain.strStatus))
-            if self.mpuMain.semOk:
-                self.varCurrVersionNbrMp.setText(str(self.mpuMain.ver).zfill(6))
-                self.varCurrIdNbrMp.setText(str(self.mpuMain.id))
-            else:
-                self.varCurrIdNbrMp.setText('__')
-                self.varCurrVersionNbrMp.setText('__')
+            _strVer, _strId = self.mpuMain.getStrVerId()
+            self.varCurrVersionNbrMp.setText(_strVer)
+            self.varCurrIdNbrMp.setText(_strId)
             sleep(1)
 
     def gwTask(self):
         while True:
             self.mpuGw.checkJLink()
             self.varJLinkStateGw.setText(str(self.mpuGw.strStatus))
-            if self.mpuGw.semOk:
-                self.varCurrVersionNbrGw.setText(str(self.mpuGw.ver).zfill(6))
-                self.varCurrIdNbrGw.setText(str(self.mpuGw.id))
-            else:
-                self.varCurrIdNbrGw.setText('__')
-                self.varCurrVersionNbrGw.setText('__')
+            _strVer, _strId = self.mpuGw.getStrVerId()
+            self.varCurrVersionNbrGw.setText(_strVer)
+            self.varCurrIdNbrGw.setText(_strId)
             sleep(1)
 
     def changeSet(self):
@@ -118,21 +101,59 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def released_imgs_update(self, lts):
         try:
-            list = self.files.list_files(lts)
+            list = self.files.list_files(lts == False)
             for file_name in list:
                 if re.search("LIB_MAIN", file_name):
-                    self.varAvailableVersionNbrMp.setText(file_name)
+                    self.mpuMain.fileName = file_name
+                    self.varAvailableVersionNbrMp.setText(self.mpuMain.getStrVerCs())
 
                 if re.search("LIB_NETW", file_name):
-                    self.varAvailableVersionNbrNw.setText(file_name)
+                    self.mpuNetw.fileName = file_name
+                    self.varAvailableVersionNbrNw.setText(self.mpuNetw.getStrVerCs())
 
                 if re.search("LIB_GW", file_name):
-                    self.varAvailableVersionNbrGw.setText(file_name)
+                    self.mpuGw.fileName = file_name
+                    self.varAvailableVersionNbrGw.setText(self.mpuGw.getStrVerCs())
 
                 if re.search("LIB_REM",file_name):
-                    self.varAvailableVersionNbrRem.setText(file_name)
+                    self.mpuRem.fileName = file_name
+                    self.varAvailableVersionNbrRem.setText(self.mpuRem.getStrVerCs())
         except:
             self.semOk = False
+
+    def funUpdateImages(self):
+        self.mpuMain.flash_image(self.files.path)
+        self.mpuNetw.flash_image(self.files.path)
+        self.mpuGw.flash_image(self.files.path)
+        self.mpuRem.flash_image(self.files.path)
+
+    def funUpdateId(self):
+        _new_id = 0
+        try:
+            _new_id = int(self.lineNewId.text())
+        except ValueError:
+            self.labelNewIdStatus.setText('not correct ID')
+            self.lineNewId.setText('')
+            return
+        if _new_id >= self.MAX_ID_VALUE or _new_id == 0:
+            self.labelNewIdStatus.setText('not correct ID')
+            self.lineNewId.setText('')
+            return
+        _strRes = ''
+        _sem, _out = self.mpuMain.set_id(_new_id)
+        if _sem:
+            _strRes += 'mp : ' + _out
+        _sem, _out = self.mpuNetw.set_id(_new_id)
+        if _sem:
+            _strRes += 'np : ' + _out
+        _sem, _out = self.mpuGw.set_id(_new_id)
+        if _sem:
+            _strRes += 'gp : ' + _out
+        _sem, _out = self.mpuRem.set_id(_new_id)
+        if _sem:
+            _strRes += 'rp : ' + _out
+
+        self.labelNewIdStatus.setText(_strRes)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

@@ -904,6 +904,11 @@
        <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -1335,6 +1340,11 @@
        </disabled>
       </palette>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -1371,6 +1381,11 @@
        <width>271</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>xx.xx.xx</string>
@@ -1409,6 +1424,11 @@
        <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>_</string>
      </property>
@@ -1441,7 +1461,7 @@
    <widget class="QLabel" name="labelNewId">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>80</x>
       <y>680</y>
       <width>81</width>
       <height>20</height>
@@ -1469,7 +1489,7 @@ font: 14pt &quot;MS Shell Dlg 2&quot;;
 background-color:white;</string>
     </property>
     <property name="text">
-     <string>0</string>
+     <string/>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -1534,6 +1554,11 @@ background-color:white;</string>
        <width>131</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>xx.xx.xx</string>
@@ -1966,6 +1991,11 @@ background-color:white;</string>
        </disabled>
       </palette>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -2003,6 +2033,11 @@ background-color:white;</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -2039,6 +2074,11 @@ background-color:white;</string>
        <width>81</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>_</string>
@@ -2544,6 +2584,11 @@ background-color:white;</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -2975,6 +3020,11 @@ background-color:white;</string>
        </disabled>
       </palette>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -3012,6 +3062,11 @@ background-color:white;</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -3048,6 +3103,11 @@ background-color:white;</string>
        <width>81</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>_</string>
@@ -3137,6 +3197,11 @@ background-color:white;</string>
        <width>131</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>xx.xx.xx</string>
@@ -3569,6 +3634,11 @@ background-color:white;</string>
        </disabled>
       </palette>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -3606,6 +3676,11 @@ background-color:white;</string>
        <height>20</height>
       </rect>
      </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
      <property name="text">
       <string>xx.xx.xx</string>
      </property>
@@ -3642,6 +3717,11 @@ background-color:white;</string>
        <width>81</width>
        <height>20</height>
       </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
      </property>
      <property name="text">
       <string>_</string>
@@ -3703,7 +3783,7 @@ QPushButton:pressed{
      <string>Update Id</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonManualSet">
+   <widget class="QPushButton" name="pushButtonUpdateImages">
     <property name="geometry">
      <rect>
       <x>840</x>
@@ -3750,6 +3830,22 @@ QPushButton:pressed{
     </property>
     <property name="text">
      <string>LTS</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelNewIdStatus">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>680</y>
+      <width>501</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string> </string>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
     </property>
    </widget>
   </widget>

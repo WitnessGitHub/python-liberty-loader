@@ -1,13 +1,13 @@
 import threading
 from time import sleep
 
+# from img_files import ImgFiles
 from lib_jlink import JLink
 
 
 class Mpu:
     def __exit__(self):
         self.semOk = False
-        self.taskJLinkControl.stop()
         self.link.jlink._finalize()
 
     def __init__(self, sn, type):
@@ -17,6 +17,9 @@ class Mpu:
         self.semOk = False
         self.semBusy = False
         self.strOut = ""
+        self.fileName = ""
+        self.strFileVerCs = ""
+        # self.files = ImgFiles()
 
         self.link = JLink()
         self.semOk, self.strOut = self.link.init(sn)
@@ -24,108 +27,68 @@ class Mpu:
         self.strDeviceType = self.link.str_dev_type(type)
 
 
+    def getStrVerId(self):
+        _strVer = '__'
+        _strId = '__'
+        if self.semOk:
+            _strVer = str(self.ver).zfill(6)
+            _strId = str(self.id)
+        return _strVer, _strId
+    def getStrVerCs(self):
+        _list = self.fileName.split('_')
+        if len(_list) > 4:
+            return 'Ver: ' + _list[2] + '   Cs: ' + _list[3]
+        elif len(_list) > 3:
+            return 'Ver: ' + _list[2] + '   Cs: ' + _list[3].split('.')[0]
+        else:
+            return ''
+
     def checkJLink(self):
         if self.semBusy == False:
             self.semOk, self.strOut = self.link.get_product_name()
-            self.strStatus = self.strOut
         if self.semOk and self.semBusy == False:
-            self.semOk, self.id = self.link.read_id()
+            self.semOk, self.strOut, self.id = self.link.read_id()
         if self.semOk and self.semBusy == False:
-            self.semOk, cs, type, self.ver, len = self.link.read_info()
+            self.semOk, self.strOut, self.ver = self.link.read_info()
         self.strStatus = self.strOut
 
-    def open_file(self, cpu, lts):
-        try:
-            res, file_name = self.files.read_files(cpu, lts)
-            if res:
-                list = file_name.split('_')
-                self.label_file_img.configure(text='File Ver: ' + list[1] + ' ' + list[2])
-                return True, file_name
-            else:
-                # print('Unknown File')
-                return False, ""
-        except:
-            self.semOk = False
-            return False, ""
-
-    def flash_image(self, lts):
-        self.single_img_flash(self.type, lts, self.link)
-    def single_img_flash(self, cpu, lts, link):
+    def flash_image(self, path):
         if self.semOk == False or self.semBusy == True:
             return
-        sem, file_name = self.open_file(cpu, lts)
-        if sem:
-            if self.sanity_file(file_name):
-                if self.semOk:
-                    self.taskImgFlashing = threading.Thread(target=self.imgFlashing, daemon=True, args=(file_name, link)).start()
-            else:
-                return False, ''
+        if self.sanity_file(self.fileName):
+            self.taskImgFlashing = threading.Thread(target=self.funFlashing, daemon=True, args=(path, self.fileName, self.link)).start()
 
-    def set_id(self):
-        if self.semOk == False or self.semBusy == True:
-            return
-        new_id = 0
-        try:
-            new_id = int(self.entry.get())
-        except ValueError:
-            self.entry.delete(first_index=0, last_index=50)
-            self.label_curr_id.configure(text='Wrong ID')
+    def sanity_file(self, file_name):
+        if file_name == "":
             return False
-        if new_id >= self.MAX_ID_VALUE:
-            self.entry.delete(first_index=0, last_index=50)
-            self.label_curr_id.configure(text='Unknown ID')
-            return False
-        self.link.set_id(new_id)
-        res, inp = self.link.read_id()
-        # print(res,inp )
-        if res:
-            self.label_curr_id.configure(text="Written ID:  " + str(inp))
         else:
-            self.entry.delete(first_index=0, last_index=50)
-            self.label_curr_id.configure(text='Unknown ID')
+            return True
 
-
-    def read_img_id(self):
-        try:
-            res, _id = self.link.read_id()
-            if res:
-                self.label_curr_id.configure(text="Current ID:  " + str(_id))
-            else:
-                self.label_curr_id.configure(text='Unknown ID')
-        except:
-            self.semOk = False
-
-    def read_img_info(self, link):
-        try:
-            res, cs, type, ver = link.read_info()
-            # print('res', res, 'cs', cs, 'type', type, 'ver', ver)
-            if res:
-                self.strDeviceType = link.str_dev_type(type)
-                self.label_curr_img.configure(text="Curr Ver:  " + self.strDeviceType + ": " + link.str_dev_ver(ver))
-            else:
-                self.label_curr_img.configure(text='Unknown Img Info')
-        except:
-            self.semOk = False
-
-
-    def imgFlashing(self, file, link):
+    def funFlashing(self, path, file, link):
         self.semBusy = True
-        # self.progressbar.configure(height=10)
-        # self.progressbar.start()
-        print('file', self.files.path + '/' + file)
-        # self.label_curr_img.configure(text='Image is Flashing...')
+        print('file', path + '/' + file)
+        print('start flashing')
         try:
-            link.flash_img(self.files.path + '/' + file)
+            link.flash_img(path + '/' + file)
         except:
-            # self.label_curr_img.configure(text='Cannot flash')
-            # self.progressbar.configure(height=2)
-            # self.progressbar.stop()
+            print('Cannot flash')
             self.semBusy = False
             return
         sleep(1.0)
-        # print('end flashing')
-        self.progressbar.configure(height=2)
-        self.progressbar.stop()
-        type, ver = link.set_img_info(file)
-        self.label_curr_img.configure(text='Curr Ver ' + type + ": " + ver)
+        print('end flashing')
+        _sem, _res = link.set_img_info(file)
+        self.semOk = _sem
+        print('Curr State ', _sem, _res)
         self.semBusy = False
+
+    def set_id(self, id):
+        if self.semOk == False or self.semBusy == True:
+            return False, ''
+
+        self.link.set_id(id)
+        sem, res, read_id = self.link.read_id()
+        print(sem, res, read_id)
+        if res:
+            return True, "Written ID: " + str(read_id)
+        else:
+            return False, 'Unknown ID'
