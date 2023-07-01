@@ -5,9 +5,11 @@ import tkinter
 from time import sleep
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QMessageBox, QInputDialog
 import sys
 
+from config import Config
 from img_files import ImgFiles
 from mpu import Mpu
 
@@ -16,8 +18,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     SN_MAIN = 52003835
     SN_NETW = 52003834
-    SN_REM = 601015761
-    SN_GW = 601015769
+    SN_REM = 52003841
+    SN_GW = 52003833
 
     DEVICE_TYPE_REM = 1
     DEVICE_TYPE_MAIN = 2
@@ -37,9 +39,11 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi(self.ui_file, self)
         self.checkBox.setChecked(True)
 
+        self.config = Config()
+        self.config.load()
         self.files = ImgFiles()
 
-        self.mpuMain = Mpu(self.SN_MAIN, self.DEVICE_TYPE_MAIN)
+        self.mpuMain = Mpu(self.SN_MAIN, self.config.set['main'])
         self.mpuNetw = Mpu(self.SN_NETW, self.DEVICE_TYPE_NETW)
         self.mpuGw = Mpu(self.SN_GW, self.DEVICE_TYPE_GW)
         self.mpuRem = Mpu(self.SN_REM, self.DEVICE_TYPE_REM)
@@ -48,11 +52,45 @@ class MainWindow(QtWidgets.QMainWindow):
         # checkbox connection
         self.checkBox.released.connect(self.changeSet)
         # buttons connection
-        self.pushButtonUpdateImages.released.connect(self.funUpdateImages)
-        self.pushButtonUpdateId.released.connect(self.funUpdateId)
+        self.pushButtonUpdateImages.clicked.connect(self.funUpdateImages)
+        self.pushButtonUpdateId.clicked.connect(self.funUpdateId)
+        self.toolButtonCnfgMain.clicked.connect(self.funConfigMaibnSn)
+        self.toolButtonCnfgNetw.clicked.connect(self.funConfigNetwSn)
+        self.toolButtonCnfgMGw.clicked.connect(self.funConfigGwSn)
+        self.toolButtonCnfgRem.clicked.connect(self.funConfigRemSn)
 
         threading.Timer(2.0, self.delay_init).start()
 
+    # btn = QPushButton('Set Window Title')
+    # btn.clicked.connect(self.open_input_dialog)
+    def funConfigMaibnSn(self):
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:                 .', self.SN_MAIN, 10000000, 100000000, 1)
+        if ok:
+            self.config.set['main'] = newSn
+            self.config.save()
+    def funConfigNetwSn(self):
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:                 .', self.SN_NETW, 10000000, 100000000, 1)
+        if ok:
+            self.config.set['netw'] = newSn
+            self.config.save()
+
+    def funConfigGwSn(self):
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:                 .', self.SN_GW, 10000000, 100000000, 1)
+        if ok:
+            self.config.set['gw'] = newSn
+            self.config.save()
+
+    def funConfigRemSn(self):
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:                 .', self.SN_REM, 10000000, 100000000, 1)
+        if ok:
+            self.config.set['rem'] = newSn
+            self.config.save()
+
+        # dlg = ConfigDialog()
+        # if dlg.exec():
+        #     print("Success!")
+        # else:
+        #     print("Cancel!")
     def delay_init(self):
         # print('start JLink control')
         self.taskJLinkControlRem = threading.Thread(target=self.remTask, daemon=True).start()
