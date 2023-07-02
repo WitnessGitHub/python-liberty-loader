@@ -1463,6 +1463,27 @@ QToolButton:pressed{
       <string>...</string>
      </property>
     </widget>
+    <widget class="QLabel" name="varAvailableVersionNbrNw">
+     <property name="geometry">
+      <rect>
+       <x>500</x>
+       <y>100</y>
+       <width>361</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>xx.xx.xx</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="labelNewId">
     <property name="geometry">
@@ -2118,6 +2139,27 @@ QToolButton:pressed{
      </property>
      <property name="text">
       <string>...</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="varAvailableVersionNbrGw">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>90</y>
+       <width>361</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>xx.xx.xx</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>
@@ -3149,69 +3191,6 @@ QToolButton:pressed{
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="varAvailableVersionNbrRem">
-     <property name="geometry">
-      <rect>
-       <x>510</x>
-       <y>570</y>
-       <width>341</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>xx.xx.xx</string>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="varAvailableVersionNbrNw">
-     <property name="geometry">
-      <rect>
-       <x>510</x>
-       <y>260</y>
-       <width>361</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>xx.xx.xx</string>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
-    <widget class="QLabel" name="varAvailableVersionNbrGw">
-     <property name="geometry">
-      <rect>
-       <x>510</x>
-       <y>410</y>
-       <width>341</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>12</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>xx.xx.xx</string>
-     </property>
-     <property name="scaledContents">
-      <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QToolButton" name="toolButtonCnfgMain">
      <property name="geometry">
       <rect>
@@ -3859,6 +3838,27 @@ QToolButton:pressed{
       <string>...</string>
      </property>
     </widget>
+    <widget class="QLabel" name="varAvailableVersionNbrRem">
+     <property name="geometry">
+      <rect>
+       <x>490</x>
+       <y>90</y>
+       <width>361</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>xx.xx.xx</string>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="pushButtonUpdateId">
     <property name="geometry">
@@ -3963,7 +3963,7 @@ QPushButton:pressed{
      <x>0</x>
      <y>0</y>
      <width>1177</width>
-     <height>18</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

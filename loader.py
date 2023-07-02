@@ -34,7 +34,6 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         #Load the UI Page
-        # self.ui_file = os.environ['WORKBENCH_PATH'] + "/win.ui"
         self.ui_file = "gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
         self.checkBox.setChecked(True)
@@ -44,9 +43,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.files = ImgFiles()
 
         self.mpuMain = Mpu(self.SN_MAIN, self.config.set['main'])
-        self.mpuNetw = Mpu(self.SN_NETW, self.DEVICE_TYPE_NETW)
-        self.mpuGw = Mpu(self.SN_GW, self.DEVICE_TYPE_GW)
-        self.mpuRem = Mpu(self.SN_REM, self.DEVICE_TYPE_REM)
+        self.mpuNetw = Mpu(self.SN_NETW, self.config.set['netw'])
+        self.mpuGw = Mpu(self.SN_GW, self.config.set['gw'])
+        self.mpuRem = Mpu(self.SN_REM, self.config.set['rem'])
 
         self.released_imgs_update(self.checkBox.isChecked())
         # checkbox connection
@@ -61,36 +60,30 @@ class MainWindow(QtWidgets.QMainWindow):
 
         threading.Timer(2.0, self.delay_init).start()
 
-    # btn = QPushButton('Set Window Title')
-    # btn.clicked.connect(self.open_input_dialog)
     def funConfigMaibnSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:                 .', self.SN_MAIN, 10000000, 100000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], 10000000, 100000000, 1)
         if ok:
             self.config.set['main'] = newSn
             self.config.save()
     def funConfigNetwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:                 .', self.SN_NETW, 10000000, 100000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], 10000000, 100000000, 1)
         if ok:
             self.config.set['netw'] = newSn
             self.config.save()
 
     def funConfigGwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:                 .', self.SN_GW, 10000000, 100000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], 10000000, 100000000, 1)
         if ok:
             self.config.set['gw'] = newSn
             self.config.save()
 
     def funConfigRemSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:                 .', self.SN_REM, 10000000, 100000000, 1)
+        dlg = QtWidgets.QInputDialog
+        newSn, ok = dlg.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], 10000000, 100000000, 1)
         if ok:
             self.config.set['rem'] = newSn
             self.config.save()
 
-        # dlg = ConfigDialog()
-        # if dlg.exec():
-        #     print("Success!")
-        # else:
-        #     print("Cancel!")
     def delay_init(self):
         # print('start JLink control')
         self.taskJLinkControlRem = threading.Thread(target=self.remTask, daemon=True).start()

@@ -9,13 +9,13 @@ class Config():
         # load from a saved file
         try:
             self.set = pickle.load(open("./config/config.pckl", "rb"))
-            print("has been loaded set: ", self.set)
+            # print("has been loaded set: ", self.set)
         except:
             self.save()
 
     def save(self):
         try:
-            print("will be saved set: ", self.set)
+            # print("will be saved set: ", self.set)
             pickle.dump(self.set, open("./config/config.pckl", "wb"))
         except:
             pass
