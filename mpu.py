@@ -16,14 +16,17 @@ class Mpu:
         self.strStatus = ''
         self.type = type
         self.semOk = False
-        self.semBusy = False
         self.strOut = ""
         self.fileName = ""
         self.strFileVerCs = ""
+        self.semSetId = False
+        self.newId = 1
+        self.semFlasImage = False
+        self.pathImage = ''
 
-        self.link = JLink()
+        self.link = JLink(type)
         self.semOk, self.strOut = self.link.init(sn)
-        print(self.semOk, self.strOut)
+        # print(self.semOk, self.strOut)
         self.strDeviceType = self.link.str_dev_type(type)
 
 
@@ -44,21 +47,31 @@ class Mpu:
             return ''
 
     def checkJLink(self):
-        if self.semBusy == False:
-            self.semOk, self.strOut = self.link.get_product_name(self.sn)
-        else:
-            print('SN ', self.sn, 'busy')
-        if self.semOk and self.semBusy == False:
-            self.semOk, self.strOut, self.id = self.link.read_id(self.sn)
-        if self.semOk and self.semBusy == False:
+        self.semOk, self.strOut = self.link.get_product_name(self.sn)
+        # print('SN ', self.sn, 'checkJLink', self.semOk)
+        # set ID
+        if self.semOk and self.semSetId and self.newId > 0:
+            self.semSetId = False
+            self.semOk, self.strOut = self.set_id(self.newId)
+        # flash Image
+        if self.semOk and self.semFlasImage:
+            self.semFlasImage = False
+            self.flash_image(self.pathImage)
+        # read ver
+        if self.semOk:
             self.semOk, self.strOut, self.ver = self.link.read_info(self.sn)
+        # read id
+        if self.semOk:
+            self.semOk, self.strOut, self.id = self.link.read_id(self.sn)
         self.strStatus = self.strOut
 
+    def req_flash_image(self, path):
+        self.pathImage = path
+        self.semFlasImage = True
+
     def flash_image(self, path):
-        if self.semOk == False or self.semBusy == True:
-            return
         if self.sanity_file(self.fileName):
-            self.taskImgFlashing = threading.Thread(target=self.funFlashing, daemon=True, args=(path, self.fileName, self.link)).start()
+            self.funFlashing(path, self.fileName, self.link)
 
     def sanity_file(self, file_name):
         if file_name == "":
@@ -67,42 +80,30 @@ class Mpu:
             return True
 
     def funFlashing(self, path, file, link):
-        if self.semOk == False:
-            return
-        if self.semBusy == True:
-            sleep(0.5)
-        self.semBusy = True
         print('file', path + '/' + file)
         print('start flashing')
         try:
             link.flash_img(self.sn, path + '/' + file)
         except:
             print('Cannot flash')
-            self.semBusy = False
             return
-        sleep(1.0)
+        sleep(0.5)
         print('end flashing')
         _sem, _res = link.set_img_info(self.sn, file)
         self.semOk = _sem
         print('Curr State ', _sem, _res)
-        self.semBusy = False
+
+    def req_set_id(self, id):
+        self.newId = id
+        self.semSetId = True
 
     def set_id(self, id):
-        if self.semOk == False:
-            return False, ' '
-
-        if self.semBusy == True:
-            sleep(0.5)
-        self.semBusy = True
-        sem, res = self.link.set_id(self.sn, id)
-        if sem == False:
-            self.semBusy = False
-            return False, ' '
-        sem, res, read_id = self.link.read_id(self.sn)
-        print(sem, res, read_id)
-        if sem:
-            self.semBusy = False
+        _sem, _res = self.link.set_id(self.sn, id)
+        if _sem == False:
+            return False, _res
+        _sem, _res, read_id = self.link.read_id(self.sn)
+        print(_sem, _res, read_id)
+        if _sem:
             return True, "written id: " + str(read_id)
         else:
-            self.semBusy = False
             return False, 'unknown id'

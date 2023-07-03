@@ -18,7 +18,7 @@ class MainWindow(QtWidgets.QMainWindow):
     DEVICE_TYPE_NETW = 3
     DEVICE_TYPE_GW = 4
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.97 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 0.98+0 '
 
     MAX_ID_VALUE = 1000000
 
@@ -28,6 +28,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #Load the UI Page
         self.ui_file = "./gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
+        self.setWindowTitle(self.LIB_VERSION)
         self.checkBox.setChecked(True)
 
         self.config = Config()
@@ -59,29 +60,28 @@ class MainWindow(QtWidgets.QMainWindow):
         threading.Timer(2.0, self.delay_init).start()
 
     def funConfigMaibnSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], 10000000, 1000000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], 10000000, 1000000000)
         if ok:
             self.config.set['main'] = newSn
             self.config.save()
             self.labelSnMain.setText('SN: ' + str(self.config.set['main']))
 
     def funConfigNetwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], 10000000, 1000000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], 10000000, 1000000000)
         if ok:
             self.config.set['netw'] = newSn
             self.config.save()
             self.   labelSnNetw.setText('SN: ' + str(self.config.set['netw']))
 
     def funConfigGwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], 10000000, 1000000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], 10000000, 1000000000)
         if ok:
             self.config.set['gw'] = newSn
             self.config.save()
             self.labelSnGw.setText('SN: ' + str(self.config.set['gw']))
 
     def funConfigRemSn(self):
-        dlg = QtWidgets.QInputDialog
-        newSn, ok = dlg.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], 10000000, 1000000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], 10000000, 1000000000)
         if ok:
             self.config.set['rem'] = newSn
             self.config.save()
@@ -156,10 +156,10 @@ class MainWindow(QtWidgets.QMainWindow):
             self.semOk = False
 
     def funUpdateImages(self):
-        self.mpuMain.flash_image(self.files.path)
-        self.mpuNetw.flash_image(self.files.path)
-        self.mpuGw.flash_image(self.files.path)
-        self.mpuRem.flash_image(self.files.path)
+        self.mpuMain.req_flash_image(self.files.path)
+        self.mpuNetw.req_flash_image(self.files.path)
+        self.mpuGw.req_flash_image(self.files.path)
+        self.mpuRem.req_flash_image(self.files.path)
 
     def funUpdateId(self):
         _new_id = 0
@@ -173,21 +173,12 @@ class MainWindow(QtWidgets.QMainWindow):
             self.labelNewIdStatus.setText('not correct id')
             self.lineNewId.setText('')
             return
-        _strRes = ''
-        _sem, _out = self.mpuMain.set_id(_new_id)
-        if _sem:
-            _strRes += '  mp : ' + _out
-        _sem, _out = self.mpuNetw.set_id(_new_id)
-        if _sem:
-            _strRes += '  np : ' + _out
-        _sem, _out = self.mpuGw.set_id(_new_id)
-        if _sem:
-            _strRes += '  gp : ' + _out
-        _sem, _out = self.mpuRem.set_id(_new_id)
-        if _sem:
-            _strRes += '  rp : ' + _out
+        self.mpuMain.req_set_id(_new_id)
+        self.mpuNetw.req_set_id(_new_id)
+        self.mpuGw.req_set_id(_new_id)
+        self.mpuRem.req_set_id(_new_id)
 
-        self.labelNewIdStatus.setText(_strRes)
+        # self.labelNewIdStatus.setText(_strRes)
 
 def main():
     app = QtWidgets.QApplication(sys.argv)

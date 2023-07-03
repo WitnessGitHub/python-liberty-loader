@@ -3,7 +3,13 @@ import re
 import pylink
 
 class JLink():
-    def __init__(self):
+    DEVICE_TYPE_REM = 1
+    DEVICE_TYPE_MAIN = 2
+    DEVICE_TYPE_NETW = 3
+    DEVICE_TYPE_GW = 4
+
+    def __init__(self, type):
+        self.type = type
         self.ADD_ID     = 0x7e000
         self.ADD_PRM    = 0x7d800
         self.ADD_INFO   = 0x7d000
@@ -72,7 +78,10 @@ class JLink():
         try:
             self.jlink.open(serial_no=sn)
             self.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
-            self.jlink.connect(self.BGM13S)
+            if self.type == self.DEVICE_TYPE_MAIN:
+                self.jlink.connect(self.BG12P)
+            else:
+                self.jlink.connect(self.BGM13S)
             self.jlink.coresight_configure()
             self.jlink.set_reset_strategy(pylink.enums.JLinkResetStrategyCortexM3.RESETPIN)
             # self.jlink.reset(ms=10, halt=False)
@@ -90,7 +99,10 @@ class JLink():
             # jlink operation
             self.jlink.open(serial_no=sn)
             self.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
-            self.jlink.connect(self.BGM13S)
+            if self.type == self.DEVICE_TYPE_MAIN:
+                self.jlink.connect(self.BG12P)
+            else:
+                self.jlink.connect(self.BGM13S)
             self.jlink.coresight_configure()
             # self.jlink.set_reset_strategy(pylink.enums.JLinkResetStrategyCortexM3.RESETPIN)
             # self.jlink.reset(ms=10, halt=False)
