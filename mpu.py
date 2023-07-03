@@ -12,6 +12,7 @@ class Mpu:
 
     def __init__(self, sn, type):
 
+        self.sn = sn
         self.strStatus = ''
         self.type = type
         self.semOk = False
@@ -19,7 +20,6 @@ class Mpu:
         self.strOut = ""
         self.fileName = ""
         self.strFileVerCs = ""
-        # self.files = ImgFiles()
 
         self.link = JLink()
         self.semOk, self.strOut = self.link.init(sn)
@@ -45,11 +45,13 @@ class Mpu:
 
     def checkJLink(self):
         if self.semBusy == False:
-            self.semOk, self.strOut = self.link.get_product_name()
+            self.semOk, self.strOut = self.link.get_product_name(self.sn)
+        else:
+            print('SN ', self.sn, 'busy')
         if self.semOk and self.semBusy == False:
-            self.semOk, self.strOut, self.id = self.link.read_id()
+            self.semOk, self.strOut, self.id = self.link.read_id(self.sn)
         if self.semOk and self.semBusy == False:
-            self.semOk, self.strOut, self.ver = self.link.read_info()
+            self.semOk, self.strOut, self.ver = self.link.read_info(self.sn)
         self.strStatus = self.strOut
 
     def flash_image(self, path):
@@ -65,30 +67,42 @@ class Mpu:
             return True
 
     def funFlashing(self, path, file, link):
+        if self.semOk == False:
+            return
+        if self.semBusy == True:
+            sleep(0.5)
         self.semBusy = True
         print('file', path + '/' + file)
         print('start flashing')
         try:
-            link.flash_img(path + '/' + file)
+            link.flash_img(self.sn, path + '/' + file)
         except:
             print('Cannot flash')
             self.semBusy = False
             return
         sleep(1.0)
         print('end flashing')
-        _sem, _res = link.set_img_info(file)
+        _sem, _res = link.set_img_info(self.sn, file)
         self.semOk = _sem
         print('Curr State ', _sem, _res)
         self.semBusy = False
 
     def set_id(self, id):
-        if self.semOk == False or self.semBusy == True:
-            return False, ''
+        if self.semOk == False:
+            return False, ' '
 
-        self.link.set_id(id)
-        sem, res, read_id = self.link.read_id()
+        if self.semBusy == True:
+            sleep(0.5)
+        self.semBusy = True
+        sem, res = self.link.set_id(self.sn, id)
+        if sem == False:
+            self.semBusy = False
+            return False, ' '
+        sem, res, read_id = self.link.read_id(self.sn)
         print(sem, res, read_id)
-        if res:
-            return True, "Written ID: " + str(read_id)
+        if sem:
+            self.semBusy = False
+            return True, "written id: " + str(read_id)
         else:
-            return False, 'Unknown ID'
+            self.semBusy = False
+            return False, 'unknown id'

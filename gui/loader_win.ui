@@ -426,7 +426,7 @@
    </palette>
   </property>
   <property name="windowTitle">
-   <string>Microbot Medical Loader  Version 0.95</string>
+   <string>Microbot Medical Loader  Version 0.96</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QGroupBox" name="groupBoxNetwork">
@@ -1484,6 +1484,19 @@ QToolButton:pressed{
       <bool>true</bool>
      </property>
     </widget>
+    <widget class="QLabel" name="labelSnNetw">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>110</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>_</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QLabel" name="labelNewId">
     <property name="geometry">
@@ -2160,6 +2173,19 @@ QToolButton:pressed{
      </property>
      <property name="scaledContents">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSnGw">
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>110</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>_</string>
      </property>
     </widget>
    </widget>
@@ -3218,6 +3244,19 @@ QToolButton:pressed{
       <string>...</string>
      </property>
     </widget>
+    <widget class="QLabel" name="labelSnMain">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>110</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>_</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBoxRemote">
     <property name="geometry">
@@ -3857,6 +3896,19 @@ QToolButton:pressed{
      </property>
      <property name="scaledContents">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSnRem">
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>110</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>_</string>
      </property>
     </widget>
    </widget>

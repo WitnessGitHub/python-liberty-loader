@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 import re
 import threading
-import tkinter
 from time import sleep
 
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QMessageBox, QInputDialog
 import sys
 
 from config import Config
@@ -16,17 +13,12 @@ from mpu import Mpu
 
 class MainWindow(QtWidgets.QMainWindow):
 
-    SN_MAIN = 52003835
-    SN_NETW = 52003834
-    SN_REM = 52003841
-    SN_GW = 52003833
-
     DEVICE_TYPE_REM = 1
     DEVICE_TYPE_MAIN = 2
     DEVICE_TYPE_NETW = 3
     DEVICE_TYPE_GW = 4
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.95 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 0.97 '
 
     MAX_ID_VALUE = 1000000
 
@@ -34,7 +26,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         #Load the UI Page
-        self.ui_file = "gui/loader_win.ui"
+        self.ui_file = "./gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
         self.checkBox.setChecked(True)
 
@@ -42,10 +34,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.config.load()
         self.files = ImgFiles()
 
-        self.mpuMain = Mpu(self.SN_MAIN, self.config.set['main'])
-        self.mpuNetw = Mpu(self.SN_NETW, self.config.set['netw'])
-        self.mpuGw = Mpu(self.SN_GW, self.config.set['gw'])
-        self.mpuRem = Mpu(self.SN_REM, self.config.set['rem'])
+        self.mpuMain = Mpu(self.config.set['main'], self.DEVICE_TYPE_MAIN)
+        self.mpuNetw = Mpu(self.config.set['netw'], self.DEVICE_TYPE_NETW)
+        self.mpuGw = Mpu(self.config.set['gw'], self.DEVICE_TYPE_GW)
+        self.mpuRem = Mpu(self.config.set['rem'], self.DEVICE_TYPE_REM)
+
+        self.labelSnMain.setText('SN: ' + str(self.config.set['main']))
+        self.labelSnNetw.setText('SN: ' + str(self.config.set['netw']))
+        self.labelSnGw.setText('SN: ' + str(self.config.set['gw']))
+        self.labelSnRem.setText('SN: ' + str(self.config.set['rem']))
+
 
         self.released_imgs_update(self.checkBox.isChecked())
         # checkbox connection
@@ -61,28 +59,33 @@ class MainWindow(QtWidgets.QMainWindow):
         threading.Timer(2.0, self.delay_init).start()
 
     def funConfigMaibnSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], 10000000, 100000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], 10000000, 1000000000, 1)
         if ok:
             self.config.set['main'] = newSn
             self.config.save()
+            self.labelSnMain.setText('SN: ' + str(self.config.set['main']))
+
     def funConfigNetwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], 10000000, 100000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], 10000000, 1000000000, 1)
         if ok:
             self.config.set['netw'] = newSn
             self.config.save()
+            self.   labelSnNetw.setText('SN: ' + str(self.config.set['netw']))
 
     def funConfigGwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], 10000000, 100000000, 1)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], 10000000, 1000000000, 1)
         if ok:
             self.config.set['gw'] = newSn
             self.config.save()
+            self.labelSnGw.setText('SN: ' + str(self.config.set['gw']))
 
     def funConfigRemSn(self):
         dlg = QtWidgets.QInputDialog
-        newSn, ok = dlg.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], 10000000, 100000000, 1)
+        newSn, ok = dlg.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], 10000000, 1000000000, 1)
         if ok:
             self.config.set['rem'] = newSn
             self.config.save()
+            self.labelSnRem.setText('SN: ' + str(self.config.set['rem']))
 
     def delay_init(self):
         # print('start JLink control')
@@ -163,26 +166,26 @@ class MainWindow(QtWidgets.QMainWindow):
         try:
             _new_id = int(self.lineNewId.text())
         except ValueError:
-            self.labelNewIdStatus.setText('not correct ID')
+            self.labelNewIdStatus.setText('not correct id')
             self.lineNewId.setText('')
             return
         if _new_id >= self.MAX_ID_VALUE or _new_id == 0:
-            self.labelNewIdStatus.setText('not correct ID')
+            self.labelNewIdStatus.setText('not correct id')
             self.lineNewId.setText('')
             return
         _strRes = ''
         _sem, _out = self.mpuMain.set_id(_new_id)
         if _sem:
-            _strRes += 'mp : ' + _out
+            _strRes += '  mp : ' + _out
         _sem, _out = self.mpuNetw.set_id(_new_id)
         if _sem:
-            _strRes += 'np : ' + _out
+            _strRes += '  np : ' + _out
         _sem, _out = self.mpuGw.set_id(_new_id)
         if _sem:
-            _strRes += 'gp : ' + _out
+            _strRes += '  gp : ' + _out
         _sem, _out = self.mpuRem.set_id(_new_id)
         if _sem:
-            _strRes += 'rp : ' + _out
+            _strRes += '  rp : ' + _out
 
         self.labelNewIdStatus.setText(_strRes)
 

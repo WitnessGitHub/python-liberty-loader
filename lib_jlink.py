@@ -14,7 +14,6 @@ class JLink():
         self.BGM13S = 'BGM13S32F512GA'
         self.BG12P = 'EFR32BG12PXXXF1024'
         self.jlink = pylink.JLink()
-        self.sn = 0
         # -- linux --
         # lib = pylink.library.Library('/home/pi/PycharmProjects/LibertyUpdater/libjlinkarm.so.7.88.3')
         # self.jlink = pylink.JLink(lib)
@@ -70,9 +69,8 @@ class JLink():
         return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_ver_nbr
 
     def init(self, sn):
-        self.sn = sn
         try:
-            self.jlink.open(serial_no=self.sn)
+            self.jlink.open(serial_no=sn)
             self.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
             self.jlink.connect(self.BGM13S)
             self.jlink.coresight_configure()
@@ -87,10 +85,10 @@ class JLink():
             self.jlink.close()
             return False, e
 
-    def reopen(self):
+    def reopen(self, sn):
         try:
             # jlink operation
-            self.jlink.open(serial_no=self.sn)
+            self.jlink.open(serial_no=sn)
             self.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
             self.jlink.connect(self.BGM13S)
             self.jlink.coresight_configure()
@@ -101,8 +99,8 @@ class JLink():
             self.jlink.close()
             return False, str(e)
 
-    def get_product_name(self):
-        _sem, _res = self.reopen()
+    def get_product_name(self, sn):
+        _sem, _res = self.reopen(sn)
         if _sem == False:
             return _sem, _res
         product = self.jlink.product_name
@@ -113,8 +111,8 @@ class JLink():
             self.jlink.close()
             return False, "JLink Unknown"
 
-    def read_id(self):
-        _sem, _res = self.reopen()
+    def read_id(self, sn):
+        _sem, _res = self.reopen(sn)
         if _sem == False:
             return _sem, _res, 0
         buff = self.jlink.memory_read8(self.ADD_ID, 32)
@@ -122,8 +120,8 @@ class JLink():
         _sem, _id = self.sanity_block_id(buff)
         return _sem, _res, _id
 
-    def read_info(self):
-        _sem, _res = self.reopen()
+    def read_info(self, sn):
+        _sem, _res = self.reopen(sn)
         if _sem == False:
             return _sem, _res, 0
         buff = self.jlink.memory_read8(self.ADD_INFO, 32)
@@ -131,7 +129,7 @@ class JLink():
         _sem, _ver = self.sanity_block_info(buff)
         return _sem, _res, _ver
 
-    def set_id(self, id):
+    def set_id(self, sn, id):
         pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
         id_list = [(id >> (8 * i)) & 0xff for i in range(4)]
         uuid_list = list(bytearray(self.SZ_PAGE_DATA - self.SZ_PAGE_PREAMBLE))
@@ -144,14 +142,19 @@ class JLink():
         out_list = pream_list + id_list + uuid_list + cs_list
         self.sanity_block_id(out_list)
         # jlink operation
-        self.reopen()
+        _sem, _res = self.reopen(sn)
+        if _sem == False:
+            return _sem, _res
         self.jlink.flash(out_list, self.ADD_ID)
         self.jlink.close()
-        return out_list
+        # print(out_list)
+        return _sem, _res
 
-    def flash_img(self, img_file):
+    def flash_img(self, sn, img_file):
         # jlink operation
-        self.reopen()
+        _sem, _res = self.reopen(sn)
+        if _sem == False:
+            return _sem, _res
         self.jlink.flash_file(img_file, 0)
         self.jlink.close()
 
@@ -181,7 +184,7 @@ class JLink():
         elif int_dev_type == 4:
             return 'GW'
 
-    def set_img_info(self, file_name):
+    def set_img_info(self, sn, file_name):
         list = file_name.split('_')
         pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
         if len(list) > 4:
@@ -209,7 +212,7 @@ class JLink():
         out_buff = pream_list + dev_cs_buff + dev_type_buff + ver_nbr_buff + img_len_buff + zero_buff + info_cs_buff
         self.sanity_block_info(out_buff)
         # jlink operation
-        _sem, _res  = self.reopen()
+        _sem, _res  = self.reopen(sn)
         if _sem == False:
             return _sem, _res
         self.jlink.flash(out_buff, self.ADD_INFO)

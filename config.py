@@ -1,5 +1,6 @@
 import pickle
-
+# 16 - 440145616
+# 16 - 440172776
 class Config():
     def __init__(self):
         # init by default values
