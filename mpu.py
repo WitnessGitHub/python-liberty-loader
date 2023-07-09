@@ -29,12 +29,13 @@ class Mpu:
         # print(self.semOk, self.strOut)
         self.strDeviceType = self.link.str_dev_type(type)
 
-
     def getStrVerId(self):
         _strVer = '__'
+        _strCs = '__'
         _strId = '__'
         if self.semOk:
-            _strVer = str(self.ver).zfill(6)
+            _strCs = f'{self.cs:X}'
+            _strVer = str(self.ver).zfill(6) + '    ' +  _strCs
             _strId = str(self.id)
         return _strVer, _strId
     def getStrVerCs(self):
@@ -59,15 +60,16 @@ class Mpu:
             self.flash_image(self.pathImage)
         # read ver
         if self.semOk:
-            self.semOk, self.strOut, self.ver = self.link.read_info(self.sn)
+            self.semOk, self.strOut, self.ver, self.cs = self.link.read_info(self.sn)
         # read id
         if self.semOk:
             self.semOk, self.strOut, self.id = self.link.read_id(self.sn)
         self.strStatus = self.strOut
 
     def req_flash_image(self, path):
-        self.pathImage = path
-        self.semFlasImage = True
+        if self.semOk:
+            self.pathImage = path
+            self.semFlasImage = True
 
     def flash_image(self, path):
         if self.sanity_file(self.fileName):
@@ -94,8 +96,9 @@ class Mpu:
         print('Curr State ', _sem, _res)
 
     def req_set_id(self, id):
-        self.newId = id
-        self.semSetId = True
+        if self.semOk:
+            self.newId = id
+            self.semSetId = True
 
     def set_id(self, id):
         _sem, _res = self.link.set_id(self.sn, id)

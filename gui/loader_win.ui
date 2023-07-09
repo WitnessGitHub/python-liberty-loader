@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1177</width>
-    <height>746</height>
+    <height>747</height>
    </rect>
   </property>
   <property name="palette">
@@ -898,9 +898,9 @@
     <widget class="QLabel" name="varCurrVersionNbrNw">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>40</y>
-       <width>131</width>
+       <width>171</width>
        <height>20</height>
       </rect>
      </property>
@@ -1397,9 +1397,9 @@
     <widget class="QLabel" name="varCurrIdNbrNw">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>100</y>
-       <width>81</width>
+       <width>111</width>
        <height>20</height>
       </rect>
      </property>
@@ -1589,9 +1589,9 @@ background-color:white;</string>
     <widget class="QLabel" name="varCurrVersionNbrGw">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>40</y>
-       <width>131</width>
+       <width>171</width>
        <height>20</height>
       </rect>
      </property>
@@ -2088,9 +2088,9 @@ background-color:white;</string>
     <widget class="QLabel" name="varCurrIdNbrGw">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>90</y>
-       <width>81</width>
+       <width>111</width>
        <height>20</height>
       </rect>
      </property>
@@ -2658,9 +2658,9 @@ QToolButton:pressed{
     <widget class="QLabel" name="varCurrVersionNbrMp">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>40</y>
-       <width>131</width>
+       <width>171</width>
        <height>20</height>
       </rect>
      </property>
@@ -3178,9 +3178,9 @@ QToolButton:pressed{
     <widget class="QLabel" name="varCurrIdNbrMp">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>90</y>
-       <width>81</width>
+       <width>111</width>
        <height>20</height>
       </rect>
      </property>
@@ -3312,9 +3312,9 @@ QToolButton:pressed{
     <widget class="QLabel" name="varCurrVersionNbrRem">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>40</y>
-       <width>131</width>
+       <width>171</width>
        <height>20</height>
       </rect>
      </property>
@@ -3811,9 +3811,9 @@ QToolButton:pressed{
     <widget class="QLabel" name="varCurrIdNbrRem">
      <property name="geometry">
       <rect>
-       <x>200</x>
+       <x>170</x>
        <y>90</y>
-       <width>81</width>
+       <width>111</width>
        <height>20</height>
       </rect>
      </property>

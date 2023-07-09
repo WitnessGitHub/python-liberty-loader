@@ -72,7 +72,7 @@ class JLink():
         calc_cs += sum(e for i, e in enumerate(sublist_img_len))
         # print('preamble info ', rx_pream, self.PAGE_PREAMBLE, rx_pream == self.PAGE_PREAMBLE)
         # print('cs info ', rx_cs, calc_cs, rx_cs == calc_cs)
-        return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_ver_nbr
+        return ((rx_pream == self.PAGE_PREAMBLE) and (rx_cs == calc_cs)), rx_ver_nbr, rx_img_cs
 
     def init(self, sn):
         try:
@@ -138,8 +138,8 @@ class JLink():
             return _sem, _res, 0
         buff = self.jlink.memory_read8(self.ADD_INFO, 32)
         self.jlink.close()
-        _sem, _ver = self.sanity_block_info(buff)
-        return _sem, _res, _ver
+        _sem, _ver, _cs = self.sanity_block_info(buff)
+        return _sem, _res, _ver, _cs
 
     def set_id(self, sn, id):
         pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]

@@ -18,7 +18,10 @@ class MainWindow(QtWidgets.QMainWindow):
     DEVICE_TYPE_NETW = 3
     DEVICE_TYPE_GW = 4
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.98+0 '
+    SN_MIN = 10000000
+    SN_MAX = 1000000000
+
+    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+0 '
 
     MAX_ID_VALUE = 1000000
 
@@ -49,6 +52,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.released_imgs_update(self.checkBox.isChecked())
         # checkbox connection
         self.checkBox.released.connect(self.changeSet)
+        # productline feature
+        self.checkBox.setEnabled(False)
         # buttons connection
         self.pushButtonUpdateImages.clicked.connect(self.funUpdateImages)
         self.pushButtonUpdateId.clicked.connect(self.funUpdateId)
@@ -60,28 +65,28 @@ class MainWindow(QtWidgets.QMainWindow):
         threading.Timer(2.0, self.delay_init).start()
 
     def funConfigMaibnSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], 10000000, 1000000000)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['main'] = newSn
             self.config.save()
             self.labelSnMain.setText('SN: ' + str(self.config.set['main']))
 
     def funConfigNetwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], 10000000, 1000000000)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['netw'] = newSn
             self.config.save()
             self.   labelSnNetw.setText('SN: ' + str(self.config.set['netw']))
 
     def funConfigGwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], 10000000, 1000000000)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['gw'] = newSn
             self.config.save()
             self.labelSnGw.setText('SN: ' + str(self.config.set['gw']))
 
     def funConfigRemSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], 10000000, 1000000000)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['rem'] = newSn
             self.config.save()
@@ -131,7 +136,8 @@ class MainWindow(QtWidgets.QMainWindow):
             sleep(1)
 
     def changeSet(self):
-        self.released_imgs_update(self.checkBox.isChecked())
+        pass
+        # self.released_imgs_update(self.checkBox.isChecked())
 
     def released_imgs_update(self, lts):
         try:
