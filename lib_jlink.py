@@ -135,7 +135,7 @@ class JLink():
     def read_info(self, sn):
         _sem, _res = self.reopen(sn)
         if _sem == False:
-            return _sem, _res, 0
+            return _sem, _res, 0, 0
         buff = self.jlink.memory_read8(self.ADD_INFO, 32)
         self.jlink.close()
         _sem, _ver, _cs = self.sanity_block_info(buff)

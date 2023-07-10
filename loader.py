@@ -21,9 +21,16 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+0 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+2 '
 
     MAX_ID_VALUE = 1000000
+
+    def __exit__(self):
+        print('stop')
+        self.taskJLinkControlRem.stop()
+        self.taskJLinkControlMain.stop()
+        self.taskJLinkControlNetw.stop()
+        self.taskJLinkControlGw.stop()
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)

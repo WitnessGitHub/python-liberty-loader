@@ -6,6 +6,7 @@ from lib_jlink import JLink
 
 
 class Mpu:
+    MAX_ID_VALUE = 1000000
     def __exit__(self):
         self.semOk = False
         self.link.jlink._finalize()
@@ -59,11 +60,18 @@ class Mpu:
             self.semFlasImage = False
             self.flash_image(self.pathImage)
         # read ver
+        _semTempOk = False
         if self.semOk:
-            self.semOk, self.strOut, self.ver, self.cs = self.link.read_info(self.sn)
+            _semTempOk, self.strOut, self.ver, self.cs = self.link.read_info(self.sn)
+            if self.ver > 0xF00000:
+                self.ver = 0
+                self.cs = 0
         # read id
         if self.semOk:
-            self.semOk, self.strOut, self.id = self.link.read_id(self.sn)
+            _semTempOk, self.strOut, self.id = self.link.read_id(self.sn)
+            if self.id > self.MAX_ID_VALUE or self.id == 0:
+                self.id = self.MAX_ID_VALUE - 1
+        # print('_semTempOk', _semTempOk)
         self.strStatus = self.strOut
 
     def req_flash_image(self, path):
