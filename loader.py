@@ -3,7 +3,7 @@ import re
 import threading
 from time import sleep
 
-from PyQt5 import QtWidgets, uic
+from PyQt6 import QtWidgets, uic
 import sys
 
 from config import Config
@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+3 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+4 '
 
     MAX_ID_VALUE = 1000000
 
@@ -196,7 +196,7 @@ def main():
     app = QtWidgets.QApplication(sys.argv)
     main = MainWindow()
     main.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 if __name__ == '__main__':
     main()

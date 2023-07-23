@@ -92,7 +92,7 @@ class JLink():
             return True, "JLink Connected"
         except pylink.JLinkException as e:
             self.jlink.close()
-            return False, e
+            return False, str(e)
 
     def reopen(self, sn):
         try:
@@ -112,63 +112,84 @@ class JLink():
             return False, str(e)
 
     def get_product_name(self, sn):
-        _sem, _res = self.reopen(sn)
-        if _sem == False:
-            return _sem, _res
-        product = self.jlink.product_name
-        if re.search('J-Link', product):
+        try:
+            _sem, _res = self.reopen(sn)
+            if _sem == False:
+                return _sem, _res
+            product = self.jlink.product_name
+            if re.search('J-Link', product):
+                self.jlink.close()
+                return True, "JLink Connected"
+            else:
+                self.jlink.close()
+                return False, "JLink Unknown"
+        except pylink.JLinkException as e:
             self.jlink.close()
-            return True, "JLink Connected"
-        else:
-            self.jlink.close()
-            return False, "JLink Unknown"
+            return False, str(e)
+
 
     def read_id(self, sn):
-        _sem, _res = self.reopen(sn)
-        if _sem == False:
-            return _sem, _res, 0
-        buff = self.jlink.memory_read8(self.ADD_ID, 32)
-        self.jlink.close()
-        _sem, _id = self.sanity_block_id(buff)
-        return _sem, _res, _id
+        try:
+            _sem, _res = self.reopen(sn)
+            if _sem == False:
+                return _sem, _res, 0
+            buff = self.jlink.memory_read8(self.ADD_ID, 32)
+            self.jlink.close()
+            _sem, _id = self.sanity_block_id(buff)
+            return _sem, _res, _id
+        except pylink.JLinkException as e:
+            self.jlink.close()
+            return False, str(e), 0
 
     def read_info(self, sn):
-        _sem, _res = self.reopen(sn)
-        if _sem == False:
-            return _sem, _res, 0, 0
-        buff = self.jlink.memory_read8(self.ADD_INFO, 32)
-        self.jlink.close()
-        _sem, _ver, _cs = self.sanity_block_info(buff)
-        return _sem, _res, _ver, _cs
+        try:
+            _sem, _res = self.reopen(sn)
+            if _sem == False:
+                return _sem, _res, 0, 0
+            buff = self.jlink.memory_read8(self.ADD_INFO, 32)
+            self.jlink.close()
+            _sem, _ver, _cs = self.sanity_block_info(buff)
+            return _sem, _res, _ver, _cs
+        except pylink.JLinkException as e:
+            self.jlink.close()
+            return False, str(e), 0, 0
 
     def set_id(self, sn, id):
-        pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
-        id_list = [(id >> (8 * i)) & 0xff for i in range(4)]
-        uuid_list = list(bytearray(self.SZ_PAGE_DATA - self.SZ_PAGE_PREAMBLE))
-        # print('prepared id ', pream_list, id_list, uuid_list)
-        # calculate cs
-        calc_cs = sum(e for i, e in enumerate(pream_list))
-        calc_cs += sum(e for i, e in enumerate(id_list))
-        calc_cs += sum(e for i, e in enumerate(uuid_list))
-        cs_list = [(calc_cs >> (8 * i)) & 0xff for i in range(4)]
-        out_list = pream_list + id_list + uuid_list + cs_list
-        self.sanity_block_id(out_list)
-        # jlink operation
-        _sem, _res = self.reopen(sn)
-        if _sem == False:
+        try:
+            pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
+            id_list = [(id >> (8 * i)) & 0xff for i in range(4)]
+            uuid_list = list(bytearray(self.SZ_PAGE_DATA - self.SZ_PAGE_PREAMBLE))
+            # print('prepared id ', pream_list, id_list, uuid_list)
+            # calculate cs
+            calc_cs = sum(e for i, e in enumerate(pream_list))
+            calc_cs += sum(e for i, e in enumerate(id_list))
+            calc_cs += sum(e for i, e in enumerate(uuid_list))
+            cs_list = [(calc_cs >> (8 * i)) & 0xff for i in range(4)]
+            out_list = pream_list + id_list + uuid_list + cs_list
+            self.sanity_block_id(out_list)
+            # jlink operation
+            _sem, _res = self.reopen(sn)
+            if _sem == False:
+                return _sem, _res
+            self.jlink.flash(out_list, self.ADD_ID)
+            self.jlink.close()
+            # print(out_list)
             return _sem, _res
-        self.jlink.flash(out_list, self.ADD_ID)
-        self.jlink.close()
-        # print(out_list)
-        return _sem, _res
+        except pylink.JLinkException as e:
+            self.jlink.close()
+            return False, str(e)
 
     def flash_img(self, sn, img_file):
-        # jlink operation
-        _sem, _res = self.reopen(sn)
-        if _sem == False:
-            return _sem, _res
-        self.jlink.flash_file(img_file, 0)
-        self.jlink.close()
+        try:
+            # jlink operation
+            _sem, _res = self.reopen(sn)
+            if _sem == False:
+                return _sem, _res
+            self.jlink.flash_file(img_file, 0)
+            self.jlink.close()
+        except pylink.JLinkException as e:
+            self.jlink.close()
+            return False, str(e)
 
     def int_dev_type(self, str_dev_type):
         if str_dev_type == 'REM':
@@ -197,36 +218,40 @@ class JLink():
             return 'GW'
 
     def set_img_info(self, sn, file_name):
-        list = file_name.split('_')
-        pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
-        if len(list) > 4:
-            img_len = 128 * int(list[4].split('.')[0], 16)
-            dev_cs = int(list[3], 16)
-        else:
-            img_len = 0
-            dev_cs = int(list[3].split('.')[0], 16)
-        dev_type = self.int_dev_type(list[1])
-        ver_nbr = int(list[2])
-        # print('dev_type', dev_type, 'ver_nbr', ver_nbr, 'img_len', img_len, 'dev_cs', dev_cs)
-        dev_cs_buff = [(dev_cs >> (8 * i)) & 0xff for i in range(4)]  # 4
-        dev_type_buff = [(dev_type >> (8 * i)) & 0xff for i in range(4)]  # 4
-        ver_nbr_buff = [(ver_nbr >> (8 * i)) & 0xff for i in range(4)]  # 4
-        img_len_buff = [(img_len >> (8 * i)) & 0xff for i in range(4)]  # 4
-        zero_buff = [0 for i in range(8)]  # 8
-        # print('prepared info ', pream_list, dev_cs_buff, dev_type_buff, ver_nbr_buff, img_len_buff)
-        # calculate cs
-        calc_cs = sum(e for i, e in enumerate(pream_list))
-        calc_cs += sum(e for i, e in enumerate(dev_cs_buff))
-        calc_cs += sum(e for i, e in enumerate(dev_type_buff))
-        calc_cs += sum(e for i, e in enumerate(ver_nbr_buff))
-        calc_cs += sum(e for i, e in enumerate(img_len_buff))
-        info_cs_buff = [(calc_cs >> (8 * i)) & 0xff for i in range(4)]
-        out_buff = pream_list + dev_cs_buff + dev_type_buff + ver_nbr_buff + img_len_buff + zero_buff + info_cs_buff
-        self.sanity_block_info(out_buff)
-        # jlink operation
-        _sem, _res  = self.reopen(sn)
-        if _sem == False:
+        try:
+            list = file_name.split('_')
+            pream_list = [(self.PAGE_PREAMBLE >> (8 * i)) & 0xff for i in range(4)]
+            if len(list) > 4:
+                img_len = 128 * int(list[4].split('.')[0], 16)
+                dev_cs = int(list[3], 16)
+            else:
+                img_len = 0
+                dev_cs = int(list[3].split('.')[0], 16)
+            dev_type = self.int_dev_type(list[1])
+            ver_nbr = int(list[2])
+            # print('dev_type', dev_type, 'ver_nbr', ver_nbr, 'img_len', img_len, 'dev_cs', dev_cs)
+            dev_cs_buff = [(dev_cs >> (8 * i)) & 0xff for i in range(4)]  # 4
+            dev_type_buff = [(dev_type >> (8 * i)) & 0xff for i in range(4)]  # 4
+            ver_nbr_buff = [(ver_nbr >> (8 * i)) & 0xff for i in range(4)]  # 4
+            img_len_buff = [(img_len >> (8 * i)) & 0xff for i in range(4)]  # 4
+            zero_buff = [0 for i in range(8)]  # 8
+            # print('prepared info ', pream_list, dev_cs_buff, dev_type_buff, ver_nbr_buff, img_len_buff)
+            # calculate cs
+            calc_cs = sum(e for i, e in enumerate(pream_list))
+            calc_cs += sum(e for i, e in enumerate(dev_cs_buff))
+            calc_cs += sum(e for i, e in enumerate(dev_type_buff))
+            calc_cs += sum(e for i, e in enumerate(ver_nbr_buff))
+            calc_cs += sum(e for i, e in enumerate(img_len_buff))
+            info_cs_buff = [(calc_cs >> (8 * i)) & 0xff for i in range(4)]
+            out_buff = pream_list + dev_cs_buff + dev_type_buff + ver_nbr_buff + img_len_buff + zero_buff + info_cs_buff
+            self.sanity_block_info(out_buff)
+            # jlink operation
+            _sem, _res  = self.reopen(sn)
+            if _sem == False:
+                return _sem, _res
+            self.jlink.flash(out_buff, self.ADD_INFO)
+            self.jlink.close()
             return _sem, _res
-        self.jlink.flash(out_buff, self.ADD_INFO)
-        self.jlink.close()
-        return _sem, _res
+        except pylink.JLinkException as e:
+            self.jlink.close()
+            return False, str(e)
