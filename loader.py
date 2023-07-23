@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+2 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+3 '
 
     MAX_ID_VALUE = 1000000
 
@@ -60,7 +60,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # checkbox connection
         self.checkBox.released.connect(self.changeSet)
         # productline feature
-        self.checkBox.setEnabled(False)
+        # self.checkBox.setEnabled(False)
         # buttons connection
         self.pushButtonUpdateImages.clicked.connect(self.funUpdateImages)
         self.pushButtonUpdateId.clicked.connect(self.funUpdateId)
@@ -143,8 +143,7 @@ class MainWindow(QtWidgets.QMainWindow):
             sleep(1)
 
     def changeSet(self):
-        pass
-        # self.released_imgs_update(self.checkBox.isChecked())
+        self.released_imgs_update(self.checkBox.isChecked())
 
     def released_imgs_update(self, lts):
         try:
