@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.1 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.2 '
 
     MAX_ID_VALUE = 1000000
 
@@ -152,7 +152,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def released_imgs_update(self, lts, mbot):
         try:
-            list = self.files.list_files(lts == False, mbot)
+            list = self.files.list_files(lts == False, mbot == True)
+            print(list)
             for file_name in list:
                 if re.search("_MAIN_", file_name):
                     self.mpuMain.fileName = file_name
