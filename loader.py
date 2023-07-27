@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.0 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.1 '
 
     MAX_ID_VALUE = 1000000
 
