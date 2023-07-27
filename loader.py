@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 0.99+4 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.0 '
 
     MAX_ID_VALUE = 1000000
 
@@ -39,7 +39,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui_file = "./gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
         self.setWindowTitle(self.LIB_VERSION)
-        self.checkBox.setChecked(True)
+        self.checkBox_lts.setChecked(True)
+        self.checkBox_mbot.setChecked(False)
 
         self.config = Config()
         self.config.load()
@@ -56,9 +57,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelSnRem.setText('SN: ' + str(self.config.set['rem']))
 
 
-        self.released_imgs_update(self.checkBox.isChecked())
+        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
+        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
         # checkbox connection
-        self.checkBox.released.connect(self.changeSet)
+        self.checkBox_lts.released.connect(self.changeSetLts)
+        self.checkBox_mbot.released.connect(self.changeSetMbot)
         # productline feature
         # self.checkBox.setEnabled(False)
         # buttons connection
@@ -142,26 +145,28 @@ class MainWindow(QtWidgets.QMainWindow):
             self.varCurrIdNbrGw.setText(_strId)
             sleep(1)
 
-    def changeSet(self):
-        self.released_imgs_update(self.checkBox.isChecked())
+    def changeSetLts(self):
+        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
+    def changeSetMbot(self):
+        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
 
-    def released_imgs_update(self, lts):
+    def released_imgs_update(self, lts, mbot):
         try:
-            list = self.files.list_files(lts == False)
+            list = self.files.list_files(lts == False, mbot)
             for file_name in list:
-                if re.search("LIB_MAIN", file_name):
+                if re.search("_MAIN_", file_name):
                     self.mpuMain.fileName = file_name
                     self.varAvailableVersionNbrMp.setText(self.mpuMain.getStrVerCs())
 
-                if re.search("LIB_NETW", file_name):
+                if re.search("_NETW_", file_name):
                     self.mpuNetw.fileName = file_name
                     self.varAvailableVersionNbrNw.setText(self.mpuNetw.getStrVerCs())
 
-                if re.search("LIB_GW", file_name):
+                if re.search("_GW_", file_name):
                     self.mpuGw.fileName = file_name
                     self.varAvailableVersionNbrGw.setText(self.mpuGw.getStrVerCs())
 
-                if re.search("LIB_REM",file_name):
+                if re.search("_REM_",file_name):
                     self.mpuRem.fileName = file_name
                     self.varAvailableVersionNbrRem.setText(self.mpuRem.getStrVerCs())
         except:

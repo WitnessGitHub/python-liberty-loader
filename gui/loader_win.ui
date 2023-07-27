@@ -3974,7 +3974,7 @@ QPushButton:pressed{
      <string>Update Images</string>
     </property>
    </widget>
-   <widget class="QCheckBox" name="checkBox">
+   <widget class="QCheckBox" name="checkBox_lts">
     <property name="geometry">
      <rect>
       <x>980</x>
@@ -4006,6 +4006,27 @@ QPushButton:pressed{
     </property>
     <property name="scaledContents">
      <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="checkBox_mbot">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>840</x>
+      <y>680</y>
+      <width>61</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QCheckBox:checked:hover {
+	background: green;
+}</string>
+    </property>
+    <property name="text">
+     <string>MBOT</string>
     </property>
    </widget>
   </widget>
