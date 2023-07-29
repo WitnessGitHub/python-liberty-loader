@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.2 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.3 '
 
     MAX_ID_VALUE = 1000000
 
@@ -155,19 +155,19 @@ class MainWindow(QtWidgets.QMainWindow):
             list = self.files.list_files(lts == False, mbot == True)
             print(list)
             for file_name in list:
-                if re.search("_MAIN_", file_name):
+                if re.search("LIB_MAIN_", file_name) or re.search("MBOT_MAIN_", file_name):
                     self.mpuMain.fileName = file_name
                     self.varAvailableVersionNbrMp.setText(self.mpuMain.getStrVerCs())
 
-                if re.search("_NETW_", file_name):
+                if re.search("LIB_NETW_", file_name) or re.search("MBOT_NETW_", file_name):
                     self.mpuNetw.fileName = file_name
                     self.varAvailableVersionNbrNw.setText(self.mpuNetw.getStrVerCs())
 
-                if re.search("_GW_", file_name):
+                if re.search("LIB_GW_", file_name) or re.search("MBT_GW_", file_name):
                     self.mpuGw.fileName = file_name
                     self.varAvailableVersionNbrGw.setText(self.mpuGw.getStrVerCs())
 
-                if re.search("_REM_",file_name):
+                if re.search("LIB_REM_",file_name) or re.search("MBOT_REM_",file_name):
                     self.mpuRem.fileName = file_name
                     self.varAvailableVersionNbrRem.setText(self.mpuRem.getStrVerCs())
         except:
