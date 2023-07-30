@@ -7,7 +7,7 @@ from PyQt6 import QtWidgets, uic
 import sys
 
 from config import Config
-from img_files import ImgFiles
+from img_files import ImgFiles, SetVersions
 from mpu import Mpu
 
 
@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.3 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.4 '
 
     MAX_ID_VALUE = 1000000
 
@@ -39,8 +39,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui_file = "./gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
         self.setWindowTitle(self.LIB_VERSION)
-        self.checkBox_lts.setChecked(True)
-        self.checkBox_mbot.setChecked(False)
 
         self.config = Config()
         self.config.load()
@@ -57,13 +55,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.labelSnRem.setText('SN: ' + str(self.config.set['rem']))
 
 
-        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
-        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
-        # checkbox connection
-        self.checkBox_lts.released.connect(self.changeSetLts)
-        self.checkBox_mbot.released.connect(self.changeSetMbot)
-        # productline feature
-        # self.checkBox.setEnabled(False)
         # buttons connection
         self.pushButtonUpdateImages.clicked.connect(self.funUpdateImages)
         self.pushButtonUpdateId.clicked.connect(self.funUpdateId)
@@ -71,8 +62,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolButtonCnfgNetw.clicked.connect(self.funConfigNetwSn)
         self.toolButtonCnfgMGw.clicked.connect(self.funConfigGwSn)
         self.toolButtonCnfgRem.clicked.connect(self.funConfigRemSn)
+        self.toolButtonCnfgSetEnb.clicked.connect(self.funConfigSetEnb)
 
         threading.Timer(2.0, self.delay_init).start()
+
+        self.comboBox.addItems(["LTS", "STABLE", "MBOT"])
+        self.comboBox.currentIndexChanged.connect(self.index_changed)
+        self.set_ver = SetVersions.LTS
+        self.released_imgs_update(SetVersions.LTS)
+        self.comboBox.setEnabled(self.config.set['setv'] == 1)
+
+    def index_changed(self, ind):  # i is an int
+        self.set_ver = SetVersions(ind)
+        self.released_imgs_update(self.set_ver)
 
     def funConfigMaibnSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], self.SN_MIN, self.SN_MAX)
@@ -101,6 +103,13 @@ class MainWindow(QtWidgets.QMainWindow):
             self.config.set['rem'] = newSn
             self.config.save()
             self.labelSnRem.setText('SN: ' + str(self.config.set['rem']))
+
+    def funConfigSetEnb(self):
+        res, ok = QtWidgets.QInputDialog.getInt(self, 'Change Versions Set', 'Status:', self.config.set['setv'], 0, 1)
+        if ok:
+            self.config.set['setv'] = res
+            self.config.save()
+            self.comboBox.setEnabled(res == 1)
 
     def delay_init(self):
         # print('start JLink control')
@@ -145,14 +154,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.varCurrIdNbrGw.setText(_strId)
             sleep(1)
 
-    def changeSetLts(self):
-        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
-    def changeSetMbot(self):
-        self.released_imgs_update(self.checkBox_lts.isChecked(), self.checkBox_mbot.isChecked())
-
-    def released_imgs_update(self, lts, mbot):
+    def released_imgs_update(self, set_ver):
         try:
-            list = self.files.list_files(lts == False, mbot == True)
+            list = self.files.list_files(set_ver)
             print(list)
             for file_name in list:
                 if re.search("LIB_MAIN_", file_name) or re.search("MBOT_MAIN_", file_name):

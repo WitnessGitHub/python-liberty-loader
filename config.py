@@ -4,7 +4,7 @@ import pickle
 class Config():
     def __init__(self):
         # init by default values
-        self.set = dict(main=52003835, netw=52003834, gw=52003833, rem=52003841)
+        self.set = dict(main=52003835, netw=52003834, gw=52003833, rem=52003841, setv=0)
 
     def load(self):
         # load from a saved file
