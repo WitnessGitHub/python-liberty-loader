@@ -4,19 +4,19 @@ from enum import Enum
 
 
 class SetVersions(Enum):
-    LTS = 0
-    STABLE = 1
-    MBOT = 2
+    STABLE = 0
+    MBOT = 1
+    LTS = 2
 
 class ImgFiles:
      def __init__(self):
         self.path = "./files/LastRelease"
         self.lib_path_lts = "./files/LastRelease"
-        self.lib_path_dev = "./files/Candidates"
+        self.lib_path_dev = "./files/Stable"
         self.lib_path_mbot = "./files/Microbot"
         # -- linux --
         # self.lib_path_lts = "/opt/liberty/LastRelease"
-        # self.lib_path_dev = /opt/liberty/Candidates"
+        # self.lib_path_dev = /opt/liberty/Stable"
         self.dir_list = []
 
      def list_files(self, set_ver):

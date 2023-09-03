@@ -21,7 +21,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.4 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.5 '
 
     MAX_ID_VALUE = 1000000
 
@@ -66,10 +66,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
         threading.Timer(2.0, self.delay_init).start()
 
-        self.comboBox.addItems(["LTS", "STABLE", "MBOT"])
+        # self.comboBox.addItems(["STABLE", "MBOT", "LTS"])
+        self.comboBox.addItems(["STABLE", "MBOT"])
         self.comboBox.currentIndexChanged.connect(self.index_changed)
-        self.set_ver = SetVersions.LTS
-        self.released_imgs_update(SetVersions.LTS)
+        self.set_ver = SetVersions.STABLE
+        self.released_imgs_update(SetVersions.STABLE)
         self.comboBox.setEnabled(self.config.set['setv'] == 1)
 
     def index_changed(self, ind):  # i is an int
