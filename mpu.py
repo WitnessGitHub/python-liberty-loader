@@ -87,21 +87,23 @@ class Mpu:
         if file_name == "":
             return False
         else:
+            # file = open(file_name, "r")
+            # print(file.read())
             return True
 
     def funFlashing(self, path, file, link):
-        print('file', path + '/' + file)
-        print('start flashing')
+        # print('file', path + '/' + file)
+        # print('start flashing')
         try:
             link.flash_img(self.sn, path + '/' + file)
         except:
             print('Cannot flash')
             return
         sleep(0.5)
-        print('end flashing')
+        # print('end flashing')
         _sem, _res = link.set_img_info(self.sn, file)
         self.semOk = _sem
-        print('Curr State ', _sem, _res)
+        # print('Curr State ', _sem, _res)
 
     def req_set_id(self, id):
         if self.semOk:

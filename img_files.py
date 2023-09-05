@@ -11,9 +11,9 @@ class SetVersions(Enum):
 class ImgFiles:
      def __init__(self):
         self.path = "./files/LastRelease"
-        self.lib_path_lts = "./files/LastRelease"
         self.lib_path_dev = "./files/Stable"
         self.lib_path_mbot = "./files/Microbot"
+        self.lib_path_lts = "./files/LastRelease"
         # -- linux --
         # self.lib_path_lts = "/opt/liberty/LastRelease"
         # self.lib_path_dev = /opt/liberty/Stable"

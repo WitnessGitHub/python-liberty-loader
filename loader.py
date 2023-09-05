@@ -78,28 +78,28 @@ class MainWindow(QtWidgets.QMainWindow):
         self.released_imgs_update(self.set_ver)
 
     def funConfigMaibnSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLinl SN', 'Currrent JLink SN:', self.config.set['main'], self.SN_MIN, self.SN_MAX)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLink SN', 'Currrent JLink SN:', self.config.set['main'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['main'] = newSn
             self.config.save()
             self.labelSnMain.setText('SN: ' + str(self.config.set['main']))
 
     def funConfigNetwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLinl SN', 'Currrent JLink SN:', self.config.set['netw'], self.SN_MIN, self.SN_MAX)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLink SN', 'Currrent JLink SN:', self.config.set['netw'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['netw'] = newSn
             self.config.save()
             self.   labelSnNetw.setText('SN: ' + str(self.config.set['netw']))
 
     def funConfigGwSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLinl SN', 'Currrent JLink SN:', self.config.set['gw'], self.SN_MIN, self.SN_MAX)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLink SN', 'Currrent JLink SN:', self.config.set['gw'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['gw'] = newSn
             self.config.save()
             self.labelSnGw.setText('SN: ' + str(self.config.set['gw']))
 
     def funConfigRemSn(self):
-        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLinl SN', 'Currrent JLink SN:', self.config.set['rem'], self.SN_MIN, self.SN_MAX)
+        newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLink SN', 'Currrent JLink SN:', self.config.set['rem'], self.SN_MIN, self.SN_MAX)
         if ok:
             self.config.set['rem'] = newSn
             self.config.save()
@@ -168,7 +168,7 @@ class MainWindow(QtWidgets.QMainWindow):
                     self.mpuNetw.fileName = file_name
                     self.varAvailableVersionNbrNw.setText(self.mpuNetw.getStrVerCs())
 
-                if re.search("LIB_GW_", file_name) or re.search("MBT_GW_", file_name):
+                if re.search("LIB_GW_", file_name) or re.search("MBOT_GW_", file_name):
                     self.mpuGw.fileName = file_name
                     self.varAvailableVersionNbrGw.setText(self.mpuGw.getStrVerCs())
 
