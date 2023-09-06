@@ -80,14 +80,14 @@ class Mpu:
             self.semFlasImage = True
 
     def flash_image(self, path):
-        if self.sanity_file(self.fileName):
+        if self.sanity_file(path, self.fileName):
             self.funFlashing(path, self.fileName, self.link)
 
-    def sanity_file(self, file_name):
+    def sanity_file(self, path, file_name):
         if file_name == "":
             return False
         else:
-            # file = open(file_name, "r")
+            # file = open(path + '/' + file_name, 'r')
             # print(file.read())
             return True
 
