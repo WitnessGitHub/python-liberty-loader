@@ -80,6 +80,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigMaibnSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLink SN', 'Currrent JLink SN:', self.config.set['main'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.mpuMain.sn = newSn
             self.config.set['main'] = newSn
             self.config.save()
             self.labelSnMain.setText('SN: ' + str(self.config.set['main']))
@@ -87,6 +88,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigNetwSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLink SN', 'Currrent JLink SN:', self.config.set['netw'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.mpuNetw.sn = newSn
             self.config.set['netw'] = newSn
             self.config.save()
             self.   labelSnNetw.setText('SN: ' + str(self.config.set['netw']))
@@ -94,6 +96,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigGwSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLink SN', 'Currrent JLink SN:', self.config.set['gw'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.mpuGw.sn = newSn
             self.config.set['gw'] = newSn
             self.config.save()
             self.labelSnGw.setText('SN: ' + str(self.config.set['gw']))
@@ -101,6 +104,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigRemSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLink SN', 'Currrent JLink SN:', self.config.set['rem'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.mpuRem.sn = newSn
             self.config.set['rem'] = newSn
             self.config.save()
             self.labelSnRem.setText('SN: ' + str(self.config.set['rem']))
@@ -158,7 +162,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def released_imgs_update(self, set_ver):
         try:
             list = self.files.list_files(set_ver)
-            print(list)
+            # print(list)
             for file_name in list:
                 if re.search("LIB_MAIN_", file_name) or re.search("MBOT_MAIN_", file_name):
                     self.mpuMain.fileName = file_name
