@@ -17,6 +17,7 @@ class Mpu:
         self.strStatus = ''
         self.type = type
         self.semOk = False
+        self.semFwUpdated = False
         self.strOut = ""
         self.fileName = ""
         self.strFileVerCs = ""
@@ -36,7 +37,7 @@ class Mpu:
         _strId = '__'
         if self.semOk:
             _strCs = f'{self.cs:X}'
-            _strVer = str(self.ver).zfill(6) + '    ' +  _strCs
+            _strVer = str(self.ver).zfill(6) + '  ' +  _strCs
             _strId = str(self.id)
         return _strVer, _strId
     def getStrVerCs(self):
@@ -103,6 +104,7 @@ class Mpu:
         # print('end flashing')
         _sem, _res = link.set_img_info(self.sn, file)
         self.semOk = _sem
+        self.semFwUpdated = _sem
         # print('Curr State ', _sem, _res)
 
     def req_set_id(self, id):

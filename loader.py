@@ -6,6 +6,8 @@ from time import sleep
 from PyQt6 import QtWidgets, uic
 import sys
 
+from PyQt6.QtGui import QColor, QFont
+
 from config import Config
 from img_files import ImgFiles, SetVersions
 from mpu import Mpu
@@ -21,7 +23,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.5 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.6 '
 
     MAX_ID_VALUE = 1000000
 
@@ -63,15 +65,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolButtonCnfgMGw.clicked.connect(self.funConfigGwSn)
         self.toolButtonCnfgRem.clicked.connect(self.funConfigRemSn)
         self.toolButtonCnfgSetEnb.clicked.connect(self.funConfigSetEnb)
+        self.toolButtonCnfgSetEnb.setEnabled(False) # config set button is disabled
 
         threading.Timer(2.0, self.delay_init).start()
 
         # self.comboBox.addItems(["STABLE", "MBOT", "LTS"])
-        self.comboBox.addItems(["STABLE", "MBOT"])
+        self.comboBox.addItems(["MBOT"])
+        # self.comboBox.addItems(["STABLE", "MBOT"])
         self.comboBox.currentIndexChanged.connect(self.index_changed)
-        self.set_ver = SetVersions.STABLE
-        self.released_imgs_update(SetVersions.STABLE)
-        self.comboBox.setEnabled(self.config.set['setv'] == 1)
+        self.set_ver = SetVersions.MBOT
+        self.released_imgs_update(SetVersions.MBOT)
+        self.comboBox.setEnabled(False)#self.config.set['setv'] == 1)
 
     def index_changed(self, ind):  # i is an int
         self.set_ver = SetVersions(ind)
@@ -130,6 +134,21 @@ class MainWindow(QtWidgets.QMainWindow):
             _strVer, _strId = self.mpuRem.getStrVerId()
             self.varCurrVersionNbrRem.setText(_strVer)
             self.varCurrIdNbrRem.setText(_strId)
+
+            # colored version status
+            if self.mpuRem.semOk:
+                if int(self.mpuRem.fileName.split('_')[2]) == self.mpuRem.ver:
+                    self.varCurrVersionNbrRem.setStyleSheet("QLabel { color : green; font: 14pt}")
+                else:
+                    self.varCurrVersionNbrRem.setStyleSheet("QLabel { color : red; font: 16pt}")
+            else:
+                self.varCurrVersionNbrRem.setStyleSheet("QLabel { color : blue; font: 12pt}")
+            # compare the written fw version with the received one
+            if self.mpuRem.semFwUpdated:
+                self.mpuRem.semFwUpdated = False
+                self.varCurrVersionNbrRem.setText("Success")
+                self.varCurrVersionNbrRem.setStyleSheet("QLabel { color : blue; font: 18pt}")
+                sleep(0.5)
             sleep(1)
 
     def netwTask(self):
@@ -139,6 +158,21 @@ class MainWindow(QtWidgets.QMainWindow):
             _strVer, _strId = self.mpuNetw.getStrVerId()
             self.varCurrVersionNbrNw.setText(_strVer)
             self.varCurrIdNbrNw.setText(_strId)
+
+            # colored version status
+            if self.mpuNetw.semOk:
+                if int(self.mpuNetw.fileName.split('_')[2]) == self.mpuNetw.ver:
+                    self.varCurrVersionNbrNw.setStyleSheet("QLabel { color : green; font: 14pt}")
+                else:
+                    self.varCurrVersionNbrNw.setStyleSheet("QLabel { color : red; font: 16pt}")
+            else:
+                self.varCurrVersionNbrNw.setStyleSheet("QLabel { color : blue; font: 12pt}")
+            # compare the written fw version with the received one
+            if self.mpuNetw.semFwUpdated:
+                self.mpuNetw.semFwUpdated = False
+                self.varCurrVersionNbrNw.setText("Success")
+                self.varCurrVersionNbrNw.setStyleSheet("QLabel { color : blue; font: 18pt}")
+                sleep(0.5)
             sleep(1)
 
     def mainTask(self):
@@ -148,6 +182,21 @@ class MainWindow(QtWidgets.QMainWindow):
             _strVer, _strId = self.mpuMain.getStrVerId()
             self.varCurrVersionNbrMp.setText(_strVer)
             self.varCurrIdNbrMp.setText(_strId)
+
+            # colored version status
+            if self.mpuMain.semOk:
+                if int(self.mpuMain.fileName.split('_')[2]) == self.mpuMain.ver:
+                    self.varCurrVersionNbrMp.setStyleSheet("QLabel { color : green; font: 14pt}")
+                else:
+                    self.varCurrVersionNbrMp.setStyleSheet("QLabel { color : red; font: 16pt}")
+            else:
+                self.varCurrVersionNbrMp.setStyleSheet("QLabel { color : blue; font: 12pt}")
+            # compare the written fw version with the received one
+            if self.mpuMain.semFwUpdated:
+                self.mpuMain.semFwUpdated = False
+                self.varCurrVersionNbrMp.setText("Success")
+                self.varCurrVersionNbrMp.setStyleSheet("QLabel { color : blue; font: 18pt}")
+                sleep(0.5)
             sleep(1)
 
     def gwTask(self):
@@ -157,6 +206,21 @@ class MainWindow(QtWidgets.QMainWindow):
             _strVer, _strId = self.mpuGw.getStrVerId()
             self.varCurrVersionNbrGw.setText(_strVer)
             self.varCurrIdNbrGw.setText(_strId)
+
+            # colored version status
+            if self.mpuGw.semOk:
+                if int(self.mpuGw.fileName.split('_')[2]) == self.mpuGw.ver:
+                    self.varCurrVersionNbrGw.setStyleSheet("QLabel { color : green; font: 14pt}")
+                else:
+                    self.varCurrVersionNbrGw.setStyleSheet("QLabel { color : red; font: 16pt}")
+            else:
+                self.varCurrVersionNbrGw.setStyleSheet("QLabel { color : blue; font: 12pt}")
+            # compare the written fw version with the received one
+            if self.mpuGw.semFwUpdated:
+                self.mpuGw.semFwUpdated = False
+                self.varCurrVersionNbrGw.setText("Success")
+                self.varCurrVersionNbrGw.setStyleSheet("QLabel { color : blue; font: 18pt}")
+                sleep(0.5)
             sleep(1)
 
     def released_imgs_update(self, set_ver):
