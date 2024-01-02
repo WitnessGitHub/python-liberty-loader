@@ -65,7 +65,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.toolButtonCnfgMGw.clicked.connect(self.funConfigGwSn)
         self.toolButtonCnfgRem.clicked.connect(self.funConfigRemSn)
         self.toolButtonCnfgSetEnb.clicked.connect(self.funConfigSetEnb)
-        self.toolButtonCnfgSetEnb.setEnabled(False) # config set button is disabled
+        self.toolButtonCnfgSetEnb.setEnabled(False)# config set button is disabled
 
         threading.Timer(2.0, self.delay_init).start()
 
