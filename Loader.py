@@ -4,6 +4,7 @@ import threading
 from time import sleep
 
 from PyQt6 import QtWidgets, uic
+import os
 import sys
 
 from PyQt6.QtGui import QColor, QFont
@@ -23,7 +24,7 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.6 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.7 '
 
     MAX_ID_VALUE = 1000000
 
@@ -37,14 +38,21 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
 
+        #Base Patch building
+        rootPath = ""
+        # print(sys.platform, os.name)
+        if sys.platform == "win32":
+            rootPath = "C:" # win32
+        basePath = rootPath + "/Users/Shared/Loader" # macOs
+
         #Load the UI Page
-        self.ui_file = "./gui/loader_win.ui"
+        self.ui_file = basePath + "/gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
         self.setWindowTitle(self.LIB_VERSION)
 
-        self.config = Config()
+        self.config = Config(basePath)
         self.config.load()
-        self.files = ImgFiles()
+        self.files = ImgFiles(basePath)
 
         self.mpuMain = Mpu(self.config.set['main'], self.DEVICE_TYPE_MAIN)
         self.mpuNetw = Mpu(self.config.set['netw'], self.DEVICE_TYPE_NETW)
