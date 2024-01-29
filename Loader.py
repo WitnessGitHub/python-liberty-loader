@@ -7,8 +7,6 @@ from PyQt6 import QtWidgets, uic
 import os
 import sys
 
-from PyQt6.QtGui import QColor, QFont
-
 from config import Config
 from img_files import ImgFiles, SetVersions
 from mpu import Mpu
@@ -24,9 +22,10 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.7 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.8 '
 
     MAX_ID_VALUE = 1000000
+    MAX_IDLE_TIME = 5*60*60 # 5min
 
     def __exit__(self):
         print('stop')
@@ -85,6 +84,24 @@ class MainWindow(QtWidgets.QMainWindow):
         self.released_imgs_update(SetVersions.MBOT)
         self.comboBox.setEnabled(False)#self.config.set['setv'] == 1)
 
+        # Init idle timer
+        self.countIdleTime = 0
+        threading.Timer(1.0, self.incIdleCounter).start()
+        self.semTo = True
+
+    def closeEvent(self, event):
+        self.semTo = False
+    def incIdleCounter(self):
+        self.countIdleTime = self.countIdleTime + 1
+        if self.countIdleTime > self.MAX_IDLE_TIME:
+            print("too long time")
+            self.semTo = False
+            self.destroy()
+        else:
+            if self.semTo == True:
+                threading.Timer(1, self.incIdleCounter).start()
+            print("incIdleCounter", self.countIdleTime)
+
     def index_changed(self, ind):  # i is an int
         self.set_ver = SetVersions(ind)
         self.released_imgs_update(self.set_ver)
@@ -92,6 +109,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigMaibnSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Main JLink SN', 'Currrent JLink SN:', self.config.set['main'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.countIdleTime = 0
             self.mpuMain.sn = newSn
             self.config.set['main'] = newSn
             self.config.save()
@@ -100,6 +118,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigNetwSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Network JLink SN', 'Currrent JLink SN:', self.config.set['netw'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.countIdleTime = 0
             self.mpuNetw.sn = newSn
             self.config.set['netw'] = newSn
             self.config.save()
@@ -108,6 +127,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigGwSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Guidewire JLink SN', 'Currrent JLink SN:', self.config.set['gw'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.countIdleTime = 0
             self.mpuGw.sn = newSn
             self.config.set['gw'] = newSn
             self.config.save()
@@ -116,6 +136,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def funConfigRemSn(self):
         newSn, ok = QtWidgets.QInputDialog.getInt(self, 'Remote Ctr JLink SN', 'Currrent JLink SN:', self.config.set['rem'], self.SN_MIN, self.SN_MAX)
         if ok:
+            self.countIdleTime = 0
             self.mpuRem.sn = newSn
             self.config.set['rem'] = newSn
             self.config.save()
@@ -255,22 +276,29 @@ class MainWindow(QtWidgets.QMainWindow):
             self.semOk = False
 
     def funUpdateImages(self):
+        self.countIdleTime = 0
         self.mpuMain.req_flash_image(self.files.path)
         self.mpuNetw.req_flash_image(self.files.path)
         self.mpuGw.req_flash_image(self.files.path)
         self.mpuRem.req_flash_image(self.files.path)
 
+    def clearMsg(self):
+        self.labelNewIdStatus.setText('')
+
     def funUpdateId(self):
+        self.countIdleTime = 0
         _new_id = 0
         try:
             _new_id = int(self.lineNewId.text())
         except ValueError:
             self.labelNewIdStatus.setText('not correct id')
             self.lineNewId.setText('')
+            threading.Timer(5, self.clearMsg).start()
             return
         if _new_id >= self.MAX_ID_VALUE or _new_id == 0:
             self.labelNewIdStatus.setText('not correct id')
             self.lineNewId.setText('')
+            threading.Timer(5, self.clearMsg).start()
             return
         self.mpuMain.req_set_id(_new_id)
         self.mpuNetw.req_set_id(_new_id)
