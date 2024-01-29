@@ -9,7 +9,7 @@ import sys
 from config import Config
 from img_files import ImgFiles, SetVersions
 from mpu import Mpu
-
+from lib_jlink import JLink
 
 class MainWindow(QtWidgets.QMainWindow):
 
@@ -21,17 +21,10 @@ class MainWindow(QtWidgets.QMainWindow):
     SN_MIN = 10000000
     SN_MAX = 1000000000
 
-    LIB_VERSION = 'Microbot Medical Loader      Version: 1.8 '
+    LIB_VERSION = 'Microbot Medical Loader      Version: 1.9 '
 
     MAX_ID_VALUE = 1000000
-    MAX_IDLE_TIME = 5*60*60 # 5min
-
-    def __exit__(self):
-        print('stop')
-        self.taskJLinkControlRem.stop()
-        self.taskJLinkControlMain.stop()
-        self.taskJLinkControlNetw.stop()
-        self.taskJLinkControlGw.stop()
+    MAX_IDLE_TIME = 5#*60*60 # 5min
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -96,6 +89,11 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.countIdleTime > self.MAX_IDLE_TIME:
             # print("too long time")
             self.semTo = False
+            self.mpuMain.libExit()
+            self.mpuNetw.libExit()
+            self.mpuGw.libExit()
+            self.mpuRem.libExit()
+            sleep(1)
             self.destroy()
         else:
             if self.semTo == True:

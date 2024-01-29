@@ -11,6 +11,9 @@ class Mpu:
         self.semOk = False
         self.link.jlink._finalize()
 
+    def libExit(self):
+        self.__exit__()
+
     def __init__(self, sn, type):
 
         self.sn = sn

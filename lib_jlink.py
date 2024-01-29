@@ -24,7 +24,6 @@ class JLink():
         # lib = pylink.library.Library('/home/pi/PycharmProjects/LibertyUpdater/libjlinkarm.so.7.88.3')
         # self.jlink = pylink.JLink(lib)
 
-
     def sanity_block_id(self, list):
         sublist_prm = list[:4]
         sublist_id = list[4:8]
