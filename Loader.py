@@ -4,7 +4,6 @@ import threading
 from time import sleep
 
 from PyQt6 import QtWidgets, uic
-import os
 import sys
 
 from config import Config
@@ -91,10 +90,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         self.semTo = False
+
     def incIdleCounter(self):
         self.countIdleTime = self.countIdleTime + 1
         if self.countIdleTime > self.MAX_IDLE_TIME:
-            print("too long time")
+            # print("too long time")
             self.semTo = False
             self.destroy()
         else:
