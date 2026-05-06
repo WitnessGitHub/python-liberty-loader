@@ -101,7 +101,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             if self.semTo == True:
                 threading.Timer(1, self.incIdleCounter).start()
-            print("incIdleCounter", self.countIdleTime)
+            # print("incIdleCounter", self.countIdleTime)
 
     def index_changed(self, ind):  # i is an int
         self.set_ver = SetVersions(ind)
