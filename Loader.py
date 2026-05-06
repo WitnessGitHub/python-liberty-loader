@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 import re
+import signal
 import threading
 from time import sleep
 
 from PyQt6 import QtWidgets, uic
+
 import sys
 
 from config import Config
@@ -24,7 +26,7 @@ class MainWindow(QtWidgets.QMainWindow):
     LIB_VERSION = 'Microbot Medical Loader      Version: 1.9 '
 
     MAX_ID_VALUE = 1000000
-    MAX_IDLE_TIME = 5#*60*60 # 5min
+    MAX_IDLE_TIME = 5*60 # 5min
 
     def __init__(self, *args, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
@@ -80,7 +82,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.countIdleTime = 0
         threading.Timer(1.0, self.incIdleCounter).start()
         self.semTo = True
-
+        
+  
     def closeEvent(self, event):
         self.semTo = False
 
