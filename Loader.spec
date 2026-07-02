@@ -1,19 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+block_cipher = None
 
 a = Analysis(
     ['Loader.py'],
     pathex=[],
     binaries=[],
-    datas=[],
-    hiddenimports=[],
+    datas=[('gui/loader_win.ui', 'gui')],
+    hiddenimports=['pylink'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
 )
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, cipher=block_cipher)
 
 exe = EXE(
     pyz,
@@ -40,5 +41,5 @@ app = BUNDLE(
     exe,
     name='Loader.app',
     icon='microbot.icns',
-    bundle_identifier=None,
+    bundle_identifier='com.microbotmedical.loader',
 )

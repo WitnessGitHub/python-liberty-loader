@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import re
 import signal
 import threading
@@ -32,14 +33,21 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
 
         #Base Patch building
-        rootPath = ""
-        # print(sys.platform, os.name)
+        if getattr(sys, 'frozen', False):
+            bundle_dir = sys._MEIPASS
+        else:
+            bundle_dir = os.path.dirname(os.path.abspath(__file__))
         if sys.platform == "win32":
-            rootPath = "C:" # win32
-        basePath = rootPath + "/Users/Shared/Loader" # macOs
+            basePath = "C:/Users/Shared/Loader"
+        else:
+            basePath = "/Users/Shared/Loader"
+        if not os.path.isdir(basePath):
+            basePath = bundle_dir
 
         #Load the UI Page
         self.ui_file = basePath + "/gui/loader_win.ui"
+        if not os.path.exists(self.ui_file):
+            self.ui_file = bundle_dir + "/gui/loader_win.ui"
         uic.loadUi(self.ui_file, self)
         self.setWindowTitle(self.LIB_VERSION)
 
